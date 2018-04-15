@@ -23,12 +23,13 @@ class SinValuesGenerator:
     def sinValues(self):
         noises = np.random.normal(self.mu, self.sigma, self.N)
         func = lambda x, e: math.sin(self.multiplier * x) + e
-        data = [func(x, e) for x, e in zip(np.random.uniform(self.a, self.b, self.N), noises)]
-        return data
+        xData = np.random.uniform(self.a, self.b, self.N)
+        yData = [func(x, e) for x, e in zip(xData, noises)]
+        return (xData, yData)
 
 # The next classes will be moved to new files when possible.
 
-class PolinomialRegression:
+class PolynomialRegression:
     reg = 0
     M = 1
     X = None
@@ -41,17 +42,19 @@ class PolinomialRegression:
         self.reg = reg
         self.M = M
 
-    def findW(self, xData, yData):
-        if xData is None or yData is None or len(xData) == 0 or len(xData) != len(yData):
-            raise ValueError("xData and yData must be not zero equal size.")
+    def findW(self, data):
+        if isinstance(data, tuple) and data[0] is None or data[1] is None or len(data[0]) == 0 or len(data[0]) != len(data[1]):
+            raise ValueError("data must be a tuple and [0] and [1] must be not zero arrays with equal size.")
             
-        self.xData = xData.insert(1, 0)
-        self.yData = yData
+        self.xData = data[0]
+        self.yData = data[1]
         self.t = np.array(self.yData)
         func = lambda x, j: x ** j
-        self.X = np.array([[func(x, j) for j in xrange(self.M+1)] for x in self.xData])
+        self.X = np.array([[func(x, j) for j in xrange(self.M + 1)] for x in self.xData])
         Xt = np.transpose(self.X)
-        XtX = np.dot(np.dot(Xt, self.X) + np.identity(len(xData) + 1) * self.reg)
+        print(len(self.xData))
+        print(self.X.shape)
+        XtX = np.dot(Xt, self.X) + np.identity(self.X.shape[1]) * self.reg
         Xt_t = np.dot(Xt, self.t)
         try:
             XtXINv = inv(XtX)
@@ -60,9 +63,7 @@ class PolinomialRegression:
             print(e)
 
     def error(self):
-        if self.w is None:
-            raise ValueError("Error is inf. You did not calculate the error yet.")
-            
+        self.checkW()    
         reg_cond = reduce(lambda tot, wi: tot + (wi ** 2), self.w)
         X_dot_w = np.dot(self.X, self.w)
         # equals to map(lambda xi, ti: (xi - ti) ** 2, zip(X_dot_w, self.t))
@@ -72,7 +73,21 @@ class PolinomialRegression:
     def ems(self):
         return math.sqrt((2 * self.error()) / self.t.shape[0])
 
+    def y(self, x):
+        self.checkW()
+        return np.dot([x ** i for i in xrange(self.M + 1)], self.w)
+
+    def checkW(self):
+        if self.w is None:
+            raise ValueError("Error is inf. You did not calculate the error yet.")
+
 if __name__ == "__main__":
-    svg = SinValuesGenerator(2*math.pi, 0, 1, 10, 0, 10)
-    data = svg.sinValues()
-    print(data)
+    svg = SinValuesGenerator(2*math.pi, 0, 1, 50, 0, 10)
+    data1 = svg.sinValues()
+    data2 = svg.sinValues()
+    pr = PolynomialRegression(0, 5)
+    pr.findW(data1)
+    print(pr.w)
+    
+    print(data1)
+    print(data2)
