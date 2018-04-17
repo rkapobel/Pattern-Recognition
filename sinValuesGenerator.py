@@ -56,8 +56,10 @@ class PolynomialRegression:
         self.checkW()
         return np.dot([x ** i for i in xrange(self.M + 1)], self.w)
 
-    def error(self, data):
-        self.checkData(data)
+    def error(self, data, checkData = False):
+        # Mmmmmmmh
+        if checkData == True:
+            self.checkData(data)
         self.checkW()
         t = np.array(data[0])
         X = self.getX(data[1]) 
@@ -68,8 +70,9 @@ class PolynomialRegression:
         return 0.5 * (e + self.reg * reg_cond)
 
     def ems(self, data):
+        self.checkData(data)
         try:
-            return math.sqrt((2 * self.error(data)) / len(data[0]))
+            return math.sqrt((2 * self.error(data), True) / len(data[0]))
         except ZeroDivisionError as e:
             print("T is a void vector:\n" + str(e))
 
