@@ -1,0 +1,11 @@
+*.log
+*.aux
+*.toc
+*.out
+*~
+*.DS_Store
+*.o
+*.swp
+*.exe
+*.test
+*.pyc
