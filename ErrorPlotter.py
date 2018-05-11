@@ -28,5 +28,5 @@ def plotOriginalVsEstimated(fOriginal, fEstimated, data, f1Name, degree, reg):
     plot.axes().set_title("$" + f1Name + "$ $vs$ $Polynom$ $degree$: $" + str(degree) + "$ $\lambda$: $" + str(reg) + "$")
     plot.axes().set_xlabel("$x$")
     plot.axes().set_ylabel("$y$")
-    plot.ylim(-10, 10)
+    plot.ylim(-1.1, 1.1)
     plot.show()

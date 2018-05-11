@@ -20,7 +20,7 @@ functions = [sin, log, pol]
 parser = argparse.ArgumentParser(description='Polynomial Regression Tests.')
 parser.add_argument('-t', action='store', dest='test',
                     help='a: Influence of the degree hyperparameter. \n b: Influence of the lambda hyperparameter.')
-parser.add_argument('-n', action='store', dest='N', default=10,
+parser.add_argument('-n', action='store', dest='N', type=int, default=10,
                     help='Number of data to generate. Test A will run for degree M: 0..N-1.')
 parser.add_argument('-f', action='store', dest='function', type=str, default='sin',
                     help='Function to test:' + str([f.__name__ for f in functions]))
@@ -49,7 +49,7 @@ if __name__ == "__main__":
             print("Degree: " + str(degree))
             print("trng error: " + str(trngError))
             print("test error: " + str(testError))
-            if degree == 3:
+            if degree == 10:
                 plotOriginalVsEstimated(function, pr.y, np.linspace(0, 1, 1000), results.function, degree, 0)
 
         plotErrorsByDegree(list(range(N)), (trainingErrors, testErrors))        
