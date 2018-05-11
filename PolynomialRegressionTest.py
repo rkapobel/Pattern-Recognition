@@ -7,10 +7,10 @@ from ErrorPlotter import plotErrorsByDegree, plotErrorsByLogLambda, plotOriginal
 import argparse
 
 def sin(x):
-    return math.sin(2 * math.pi * x)
+    return np.sin(2 * math.pi * x)
 
 def log(x):
-    return math.log(2 * math.pi * (x + 0.000001))
+    return np.log(2 * math.pi * (x + 0.000001))
 
 def pol(x):
     return -3*(x**3) + 3*(x**2) + 4*x

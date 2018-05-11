@@ -16,7 +16,8 @@ class PolynomialRegression:
         self.checkData(data)            
         t = np.array(data[1])
         X = self.getX(data[0])
-        Xt = np.transpose(X)
+        #Xt = np.transpose(X)
+        Xt = X.T
         XtX = np.dot(Xt, X) + (np.identity(X.shape[1]) * self.reg if self.reg > 0 else 0)
         Xt_t = np.dot(Xt, t)
         try:
@@ -27,7 +28,8 @@ class PolynomialRegression:
 
     def y(self, x):
         self.checkW()
-        return np.dot([x ** i for i in xrange(self.M + 1)], self.w)
+        #return np.dot([x ** i for i in xrange(self.M + 1)], self.w)
+        return np.polynomial.polynomial.polyval(x, self.w)
 
     def error(self, data, checkData = True):
         # Mmmmmmmh
@@ -41,7 +43,8 @@ class PolynomialRegression:
             reg_cond = reduce(lambda tot, wi: tot + (wi ** 2), self.w)
         X_dot_w = np.dot(X, self.w)
         # equals to map(lambda xi, ti: (xi - ti) ** 2, zip(X_dot_w, self.t))
-        e = sum([(xi - ti) ** 2 for xi, ti in zip(X_dot_w, t)])
+        #e = sum([(xi - ti) ** 2 for xi, ti in zip(X_dot_w, t)])
+        e = sum((X_dot_w - t) ** 2)
         return 0.5 * (e + self.reg * reg_cond)
 
     def ems(self, data):
