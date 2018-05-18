@@ -3,7 +3,7 @@ import numpy as np
 import math
 from TestValues import TestValues
 from PolynomialRegression import PolynomialRegression
-from ErrorPlotter import plotErrorsByDegree, plotErrorsByLogLambda, plotOriginalVsEstimated
+from Plotter import plotErrorsByDegree, plotErrorsByLogLambda, plotOriginalVsEstimated
 import argparse
 
 def sin(x):
@@ -49,7 +49,7 @@ if __name__ == "__main__":
             print("Degree: " + str(degree))
             print("trng error: " + str(trngError))
             print("test error: " + str(testError))
-            if degree == 10:
+            if degree == 3:
                 plotOriginalVsEstimated(function, pr.y, np.linspace(0, 1, 1000), results.function, degree, 0)
 
         plotErrorsByDegree(list(range(N)), (trainingErrors, testErrors))        
