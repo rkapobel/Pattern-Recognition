@@ -31,7 +31,7 @@ class TestValues(object):
     def getNewValues(self):
         noises = np.random.normal(self.mu, self.sigma, self.N)
         xData = np.random.uniform(self.a, self.b, self.N)
-        func = lambda x, e: self.f(x) + e
+        #func = lambda x, e: self.f(x) + e
         #yData = [func(x, e) for x, e in zip(xData, noises)]
         yData = self.f(xData) + noises
         return (list(xData), yData)

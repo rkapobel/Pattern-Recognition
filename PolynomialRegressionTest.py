@@ -17,13 +17,13 @@ def pol(x):
 
 functions = [sin, log, pol]
 
-parser = argparse.ArgumentParser(description='Polynomial Regression Tests.')
-parser.add_argument('-t', action='store', dest='test',
-                    help='a: Influence of the degree hyperparameter. \n b: Influence of the lambda hyperparameter.')
-parser.add_argument('-n', action='store', dest='N', type=int, default=10,
-                    help='Number of data to generate. Test A will run for degree M: 0..N-1.')
-parser.add_argument('-f', action='store', dest='function', type=str, default='sin',
-                    help='Function to test:' + str([f.__name__ for f in functions]))
+parser = argparse.ArgumentParser(description="Polynomial Regression Tests.")
+parser.add_argument("-t", action="store", dest="test", default="a",
+                    help="a: Influence of the degree hyperparameter. \n b: Influence of the lambda hyperparameter.")
+parser.add_argument("-n", action="store", dest="N", type=int, default=10,
+                    help="Number of data to generate. Test A will run for degree M: 0..N-1.")
+parser.add_argument("-f", action="store", dest="function", type=str, default="sin",
+                    help="Function to test:" + str([f.__name__ for f in functions]))
 
 if __name__ == "__main__":
     results = parser.parse_args()
@@ -38,7 +38,11 @@ if __name__ == "__main__":
     if results.test == "a":
         trainingErrors = []
         testErrors = []
-        
+
+        minError = float("inf")        
+        minErrorDegree = 0
+        minPolynomial = None
+
         for degree in xrange(N):
             pr = PolynomialRegression(0, degree)
             pr.findW(trngData) # Finding w* for training data
@@ -49,14 +53,23 @@ if __name__ == "__main__":
             print("Degree: " + str(degree))
             print("trng error: " + str(trngError))
             print("test error: " + str(testError))
-            if degree == 3:
-                plotOriginalVsEstimated(function, pr.y, np.linspace(0, 1, 1000), results.function, degree, 0)
 
-        plotErrorsByDegree(list(range(N)), (trainingErrors, testErrors))        
-    else:
+            if testError < minError:
+                minErrorDegree = degree
+                minError = testError
+                minPolynomial = pr
+    
+        plotOriginalVsEstimated(function, minPolynomial.y, np.linspace(0, 1, 1000), trngData, results.function, minErrorDegree, 0, "originalVsEstimatedTestA")
+        plotErrorsByDegree(list(range(N)), (trainingErrors, testErrors), "errorsByDegree")        
+    elif results.test == "b":
         trainingErrors = []
         testErrors = []
-        for l in xrange(-40, 1):
+
+        minError = float("inf")        
+        minErrorLambda = 0
+        minPolynomial = None
+        
+        for l in xrange(-40, -19, 1):
             l = math.exp(l)
             pr = PolynomialRegression(l, N-1)
             pr.findW(trngData)
@@ -67,5 +80,13 @@ if __name__ == "__main__":
             print("log(lambda): " + str(l))
             print("trng error: " + str(trngError))
             print("test error: " + str(testError))
-            
-        plotErrorsByLogLambda(list(range(-40, 1)), (trainingErrors, testErrors))
+
+            if testError < minError:
+                minErrorLambda = l
+                minError = testError
+                minPolynomial = pr
+
+        plotOriginalVsEstimated(function, minPolynomial.y, np.linspace(0, 1, 1000), trngData, results.function, N-1, math.log(minErrorLambda), "originalVsEstimatedTestB")
+        plotErrorsByLogLambda(list(range(-40, -19, 1)), (trainingErrors, testErrors), "errorsByLambda")
+    else:
+        raise ValueError("Invalid test name.")
