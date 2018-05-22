@@ -4,6 +4,9 @@ import os
 
 myPath = os.path.dirname(os.path.realpath(__file__))
 
+symbols = ["x", "o", ".", ",", "v", "^", "<", ">", "s", "p", "P", "*", "h", "H", "+", "X", "D", "d", "|", "_", "1", "2", "3", "4", "8"]
+colors = ["b", "g", "r", "c", "m", "y", "k", "w"]
+
 def plotErrorsByDegree(degrees, errors, imageName):
     plot.clf()
     plot.plot(degrees, errors[0], "b-o", label="Training")
@@ -37,4 +40,11 @@ def plotOriginalVsEstimated(fOriginal, fEstimated, data, trngData, f1Name, degre
     plot.axes().set_ylabel("$y$")
     plot.ylim(-3.1, 3.1)
     plot.savefig(os.path.join(myPath, imageName + ".pdf"))
+
+def plotClasses(klasses):
+    plot.clf()
+    for i in xrange(len(klasses)):
+        klass = klasses[i]
+        #Symbol must be "fixed" iterate over colors.
+        plot.plot(klass[0], klass[1], symbol[i])
     
