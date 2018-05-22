@@ -1,7 +1,7 @@
 #!/usr/bin/python
 import numpy as np
 import math
-from TestValues import TestValues
+from SyntheticValues import RegressionValuesGenerator
 from PolynomialRegression import PolynomialRegression
 from Plotter import plotErrorsByDegree, plotErrorsByLogLambda, plotOriginalVsEstimated
 import argparse
@@ -31,9 +31,9 @@ if __name__ == "__main__":
 
     N = results.N
     function = filter(lambda function: function.__name__ == results.function, functions)[0]
-    svg = TestValues(0, 1, N, function, 0, 1)
-    trngData = svg.getNewValues()
-    testData = svg.getNewValues()
+    svg = RegressionValuesGenerator(0, 1, N, function, 0, 1)
+    trngData = svg.getSyntheticValuesForRegression()
+    testData = svg.getSyntheticValuesForRegression()
 
     if results.test == "a":
         trainingErrors = []
