@@ -6,9 +6,6 @@ import math
 class Classificator:
     W = None
 
-    def __init__(self, reg, M):
-        pass
-
     def findW(self, classes):
         T = None
         X = None
