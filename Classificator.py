@@ -14,7 +14,7 @@ class Classificator:
             aClass = classes[i]
             t = [0] * len(classes)
             t[i] = 1
-            [X.append([x1, x2]) for x1, x2 in zip(aClass)]
+            [X.append([1, x1, x2]) for x1, x2 in zip(aClass)]
             T.extend([t] * len(aClass))
             
         Xt = X.T
@@ -23,3 +23,7 @@ class Classificator:
             self.W = np.dot(np.dot(XtXInv, Xt), T)
         except np.linalg.LinAlgError as e:
             print(e)
+
+    def classificate(self, x1, x2):
+        Y = np.dot(self.W, [x1, x2])
+        return np.argmax(Y)

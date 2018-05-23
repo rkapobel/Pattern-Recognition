@@ -18,7 +18,7 @@ def pol(x):
 functions = [sin, log, pol]
 
 parser = argparse.ArgumentParser(description="Polynomial Regression Tests.")
-parser.add_argument("-t", action="store", dest="test", default="a",
+parser.add_argument("-t", action="store", dest="test", type=str, default="a",
                     help="a: Influence of the degree hyperparameter. \n b: Influence of the lambda hyperparameter.")
 parser.add_argument("-n", action="store", dest="N", type=int, default=10,
                     help="Number of data to generate. Test A will run for degree M: 0..N-1.")

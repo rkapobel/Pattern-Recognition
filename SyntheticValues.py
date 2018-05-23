@@ -37,17 +37,14 @@ class RegressionValuesGenerator(object):
         return (list(xData), yData)
 
 class ClassificationValuesGenerator(object):
-    K = 0
     x1Start = 0
     x1End = 0
     x2Start = 0
     x2End = 0
     numberOfPointsPerClass = 0
 
-    def __init__(self, x1Start, x1End, x2Start, x2End, numberOfPointsPerClass):
-        self.K = len(numberOfPointsPerClass)
-        
-        if self.K < 2:
+    def __init__(self, x1Start, x1End, x2Start, x2End, numberOfPointsPerClass):        
+        if len(numberOfPointsPerClass) < 2:
             raise ValueError("Must be at least two classes.")
 
         self.x1Start = x1Start
@@ -57,12 +54,14 @@ class ClassificationValuesGenerator(object):
         self.numberOfPointsPerClass = numberOfPointsPerClass
         
 
-    def getSyntheticValuesForClassification(self, K):
+    def getSyntheticValuesForClassification(self):
         #Figure out a way to control de cov matrix per class
         classes = []
 
-        x1Means = np.random.uniform(self.x1Start, self.x1End, self.K)
-        x2Means = np.random.uniform(self.x1Start, self.x2End, self.K)
+        K = len(self.numberOfPointsPerClass)
+
+        x1Means = np.random.uniform(self.x1Start, self.x1End, K)
+        x2Means = np.random.uniform(self.x1Start, self.x2End, K)
 
         for i in xrange(K):
             means = [x1Means[i], x2Means[i]]
