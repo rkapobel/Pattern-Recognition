@@ -3,7 +3,7 @@ import numpy as np
 import math
 from inspect import isfunction, ismethod, isbuiltin
 
-class TestValues(object):
+class RegressionValuesGenerator(object):
     mu = 0
     sigma = 1
     N = 0
@@ -28,7 +28,7 @@ class TestValues(object):
             raise Exception("You must pass a mathematical function or method for attribute f")
         self._f = value
         
-    def getNewValues(self):
+    def getSyntheticValuesForRegression(self):
         noises = np.random.normal(self.mu, self.sigma, self.N)
         xData = np.random.uniform(self.a, self.b, self.N)
         #func = lambda x, e: self.f(x) + e
@@ -44,7 +44,7 @@ class ClassificationValuesGenerator(object):
     x2End = 0
     numberOfPointsPerClass = 0
 
-    def __init__(x1Start, x1End, x2Start, x2End, numberOfPointsPerClass):
+    def __init__(self, x1Start, x1End, x2Start, x2End, numberOfPointsPerClass):
         self.K = len(numberOfPointsPerClass)
         
         if self.K < 2:
@@ -67,5 +67,5 @@ class ClassificationValuesGenerator(object):
         for i in xrange(K):
             means = [x1Means[i], x2Means[i]]
             cov = [[1, 0], [0, 1]]
-            x, y = np.random.multivariate_normal(means, cov, self.numberOfPointsPerClass[i]).T
-            classes.append((x, y))
+            x1, x2 = np.random.multivariate_normal(means, cov, self.numberOfPointsPerClass[i]).T
+            classes.append((x1, x2))
