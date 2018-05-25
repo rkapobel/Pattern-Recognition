@@ -4,7 +4,7 @@ import os
 
 myPath = os.path.dirname(os.path.realpath(__file__))
 
-markers = ["x", "o", ".", ",", "v", "^", "<", ">", "s", "p", "P", "*", "h", "H", "+", "X", "D", "d", "|", "_", "1", "2", "3", "4", "8"]
+markers = ["x", "o", "v", ".", ",", "^", "<", ">", "s", "p", "P", "*", "h", "H", "+", "X", "D", "d", "|", "_", "1", "2", "3", "4", "8"]
 colors = ["b", "g", "r", "c", "m", "y", "k", "w"]
 
 def plotErrorsByDegree(degrees, errors, imageName):
@@ -41,9 +41,19 @@ def plotOriginalVsEstimated(fOriginal, fEstimated, data, trngData, f1Name, degre
     plot.ylim(-3.1, 3.1)
     plot.savefig(os.path.join(myPath, imageName + ".pdf"))
 
-def plotClasses(klasses, imageName):
+def plotClasses(classes, classificated, imageName):
     plot.clf()
-    for i in xrange(len(klasses)):
-        klass = klasses[i]
-        plot.plot(klass[0], klass[1], colors[i % len(colors)] + markers[(i / len(colors)) % len(markers)])
+    for i in xrange(len(classes)):
+        cl = classes[i]
+        mark = colors[(i / len(markers)) % len(colors)] + markers[i % len(markers)]
+        plot.plot(cl[0], cl[1], mark)
+    
+    print(len(classificated))
+    for i in xrange(len(classificated)):
+        clPoints = classificated[i]
+        print(clPoints)
+        for point in clPoints:
+            mark = colors[((i / len(markers)) + 1) % len(colors)] + markers[i % len(markers)]
+            plot.plot(point[0], point[1], mark)
+    
     plot.savefig(os.path.join(myPath, imageName + ".pdf"))
