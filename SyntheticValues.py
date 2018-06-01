@@ -48,19 +48,22 @@ class ClassificationValuesGenerator(object):
         self.x2Start = x2Start
         self.x2End = x2End
 
-    def getSyntheticValuesForClassification(self, numberOfPointsPerClass):
-        #Figure out a way to control de cov matrix per class
+    def getSyntheticValuesForClassification(self, numberOfPointsPerClass, cov): 
+        K = len(numberOfPointsPerClass)
+        x1Means = np.random.uniform(self.x1Start, self.x1End, K)
+        x2Means = np.random.uniform(self.x2Start, self.x2End, K)
+
+        return self.getSyntheticValuesForClassificationWithMeans(numberOfPointsPerClass, cov, (x1Means, x2Means))
+
+    def getSyntheticValuesForClassificationWithMeans(self, numberOfPointsPerClass, cov, means):
         classes = []
 
         K = len(numberOfPointsPerClass)
-        
-        x1Means = np.random.uniform(self.x1Start, self.x1End, K)
-        x2Means = np.random.uniform(self.x1Start, self.x2End, K)
+        x1Means = means[0]
+        x2Means = means[1]
 
         for i in xrange(K):
-            means = [x1Means[i], x2Means[i]]
-            cov = [[1, 0], [0, 1]]
-            x1, x2 = np.random.multivariate_normal(means, cov, int(numberOfPointsPerClass[i])).T
+            x1, x2 = np.random.multivariate_normal([x1Means[i], x2Means[i]], cov, int(numberOfPointsPerClass[i])).T
             classes.append((x1, x2))
 
-        return classes
+        return classes, means

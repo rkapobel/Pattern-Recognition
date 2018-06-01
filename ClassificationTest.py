@@ -13,19 +13,21 @@ parser.add_argument("-k", action="store", dest="numberOfClasses", type=int, defa
 if __name__ == "__main__":
     results = parser.parse_args()
     if results.numberOfClasses > 1:
-        numberOfDataPerClass = np.random.uniform(10, 15, results.numberOfClasses)
-        svg = ClassificationValuesGenerator(0, 10, 0, 10)
-        classes = svg.getSyntheticValuesForClassification(numberOfDataPerClass)
+        numberOfDataPerClass = np.random.uniform(50, 100, results.numberOfClasses)
+        svg = ClassificationValuesGenerator(0, 30, 0, 30)
+        classes, means = svg.getSyntheticValuesForClassification(numberOfDataPerClass, [[1, 0], [0, 1]])
+
         classificator = Classificator()
         classificator.findW(classes)
+
         # The way to use ClassificationValuesGenerator is a little dirty
-        classificable = svg.getSyntheticValuesForClassification([30])
-        print(classificable)
-        classificated = [[]] * results.numberOfClasses
-        for point in zip(classificable[0][0], classificable[0][1]):
-            cl = classificator.classificate(point[0], point[1])
-            classificated[cl].append(point)
-            #print("point {0} in class {1}".format(point, cl))
+        classificable, means = svg.getSyntheticValuesForClassificationWithMeans([50] * results.numberOfClasses, [[6, 2], [1, 5]], means)
+        classificated = [[] for i in range(0, results.numberOfClasses)]
+        for i in xrange(results.numberOfClasses):
+            for point in zip(classificable[i][0], classificable[i][1]):
+                cl = classificator.classificate(point[0], point[1])
+                classificated[cl].append(point)
+                print("point {0} in class {1} must be {2}".format(point, cl, i))
         plotClasses(classes, classificated, "classification")
     else:
         raise ValueError("Number of classes must be greater than 1")
