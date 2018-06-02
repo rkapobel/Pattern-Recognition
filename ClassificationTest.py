@@ -13,7 +13,7 @@ parser.add_argument("-k", action="store", dest="numberOfClasses", type=int, defa
 if __name__ == "__main__":
     results = parser.parse_args()
     if results.numberOfClasses > 1:
-        numberOfDataPerClass = np.random.uniform(50, 100, results.numberOfClasses)
+        numberOfDataPerClass = np.random.uniform(80, 100, results.numberOfClasses)
         svg = ClassificationValuesGenerator(0, 30, 0, 30)
         classes, means = svg.getSyntheticValuesForClassification(numberOfDataPerClass, [[1, 0], [0, 1]])
 
@@ -21,8 +21,10 @@ if __name__ == "__main__":
         classificator.findW(classes)
 
         # The way to use ClassificationValuesGenerator is a little dirty
-        classificable, means = svg.getSyntheticValuesForClassificationWithMeans([50] * results.numberOfClasses, [[6, 2], [1, 5]], means)
+        classificable, means = svg.getSyntheticValuesForClassificationWithMeans([50] * results.numberOfClasses, [[1, 0], [0, 1]], means)
         classificated = [[] for i in range(0, results.numberOfClasses)]
+        # using the same trng points.
+        #classificable = classes
         for i in xrange(results.numberOfClasses):
             for point in zip(classificable[i][0], classificable[i][1]):
                 cl = classificator.classificate(point[0], point[1])

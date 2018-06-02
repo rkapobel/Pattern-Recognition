@@ -28,6 +28,6 @@ class Classificator:
             print(e)
 
     def classificate(self, x1, x2):
-        Y = np.dot(self.W, [1, x1, x2])
+        Y = np.dot(self.W.T, [1, x1, x2])
         print(Y)
         return np.argmax(Y)
