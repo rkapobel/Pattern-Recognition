@@ -46,12 +46,10 @@ def plotClasses(classes, classificated, imageName):
     for i in xrange(len(classes)):
         cl = classes[i]
         mark = colors[(i / len(markers)) % len(colors)] + markers[i % len(markers)]
-        plot.plot(cl[0], cl[1], mark)
-    
-    #print(len(classificated))
+        [plot.plot(point[0], point[1], mark) for point in cl]
+
     for i in xrange(len(classificated)):
         clPoints = classificated[i]
-        #print(clPoints)
         for point in clPoints:
             mark = colors[((i / len(markers)) + 1) % len(colors)] + markers[i % len(markers)]
             plot.plot(point[0], point[1], mark)

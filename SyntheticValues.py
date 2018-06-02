@@ -64,6 +64,6 @@ class ClassificationValuesGenerator(object):
 
         for i in xrange(K):
             x1, x2 = np.random.multivariate_normal([x1Means[i], x2Means[i]], cov, int(numberOfPointsPerClass[i])).T
-            classes.append((x1, x2))
+            classes.append(zip(x1, x2))
 
         return classes, means
