@@ -2,7 +2,7 @@
 import numpy as np
 import math
 from SyntheticValues import ClassificationValuesGenerator
-from Classificator import Classificator
+from Classificators import LinearClassificator
 from Plotter import plotClasses
 import argparse
 
@@ -17,7 +17,7 @@ if __name__ == "__main__":
         svg = ClassificationValuesGenerator(0, 30, 0, 30)
         classes, means = svg.getSyntheticValuesForClassification(numberOfDataPerClass, [[1, 0], [0, 1]])
 
-        classificator = Classificator()
+        classificator = LinearClassificator()
         classificator.findW(classes)
 
         # The way to use ClassificationValuesGenerator is a little dirty

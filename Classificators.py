@@ -6,6 +6,13 @@ import math
 class Classificator:
     W = None
 
+    def __init__(self):
+        pass
+
+class LinearClassificator(Classificator):
+    def __init__(self):
+        Classificator.__init__(self)
+
     def findW(self, classes):
         T = []
         X = []
@@ -31,3 +38,13 @@ class Classificator:
         Y = np.dot(self.W.T, [1, x1, x2])
         print(Y)
         return np.argmax(Y)
+
+class FisherClassificator(Classificator):
+    classMeans = None
+
+    def __init__(self):
+        Classificator.__init__(self)
+
+    def findW(self, classes):
+        for cl in classes:
+            pass
