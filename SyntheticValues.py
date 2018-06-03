@@ -37,33 +37,27 @@ class RegressionValuesGenerator(object):
         return (list(xData), yData)
 
 class ClassificationValuesGenerator(object):
-    x1Start = 0
-    x1End = 0
-    x2Start = 0
-    x2End = 0
+    a = 0
+    b = 0
 
-    def __init__(self, x1Start, x1End, x2Start, x2End):        
-        self.x1Start = x1Start
-        self.x1End = x1End
-        self.x2Start = x2Start
-        self.x2End = x2End
-
-    def getSyntheticValuesForClassification(self, numberOfPointsPerClass, cov): 
+    def __init__(self, a, b):        
+        self.a = a
+        self.b = b
+        
+    def getSyntheticValuesForClassification(self, numberOfPointsPerClass, cov, dim = 2): 
         K = len(numberOfPointsPerClass)
-        x1Means = np.random.uniform(self.x1Start, self.x1End, K)
-        x2Means = np.random.uniform(self.x2Start, self.x2End, K)
-
-        return self.getSyntheticValuesForClassificationWithMeans(numberOfPointsPerClass, cov, (x1Means, x2Means))
+        means = [np.random.uniform(self.a, self.b, K) for _ in xrange(dim)]
+        means = map(list, zip(*means))
+        return self.getSyntheticValuesForClassificationWithMeans(numberOfPointsPerClass, cov, means)
 
     def getSyntheticValuesForClassificationWithMeans(self, numberOfPointsPerClass, cov, means):
         classes = []
 
         K = len(numberOfPointsPerClass)
-        x1Means = means[0]
-        x2Means = means[1]
 
         for i in xrange(K):
-            x1, x2 = np.random.multivariate_normal([x1Means[i], x2Means[i]], cov, int(numberOfPointsPerClass[i])).T
-            classes.append(zip(x1, x2))
+            print(means[i])
+            X = np.random.multivariate_normal(means[i], cov, int(numberOfPointsPerClass[i])).T
+            classes.append(map(list, zip(*X)))
 
         return classes, means

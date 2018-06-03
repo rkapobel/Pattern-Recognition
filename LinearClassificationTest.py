@@ -14,8 +14,8 @@ if __name__ == "__main__":
     results = parser.parse_args()
     if results.numberOfClasses > 1:
         numberOfDataPerClass = np.random.uniform(80, 100, results.numberOfClasses)
-        svg = ClassificationValuesGenerator(0, 30, 0, 30)
-        classes, means = svg.getSyntheticValuesForClassification(numberOfDataPerClass, [[1, 0], [0, 1]])
+        svg = ClassificationValuesGenerator(0, 30)
+        classes, means = svg.getSyntheticValuesForClassification(numberOfDataPerClass, [[1, 0], [0, 1]], 2)
 
         classificator = LinearClassificator()
         classificator.findW(classes)
@@ -27,7 +27,7 @@ if __name__ == "__main__":
         #classificable = classes
         for i in xrange(results.numberOfClasses):
             for point in classificable[i]:
-                cl = classificator.classificate(point[0], point[1])
+                cl = classificator.classificate(point)
                 classificated[cl].append(point)
                 print("point {0} in class {1} must be {2}".format(point, cl, i))
         plotClasses(classes, classificated, "classification")
