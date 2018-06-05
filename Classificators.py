@@ -87,12 +87,14 @@ class FisherClassificator(Classificator):
 class MCFisherClassficator(Classificator):
     W = []
     eigVal = []
+    means = []
 
     def __init__(self):
         Classificator.__init__(self)
 
     def findW(self, classes):
         data = [self.calculateClass(cl) for cl in classes]
+        self.means  = [val[0] for val in data]
         m = sum([val[0] * val[1] for val in data]) / sum([val[1] for val in data])
         Sw = sum([val[2] for val in data])
         Sb = sum([np.outer(val[2] - m, val[2] - m) for val in data])
@@ -109,3 +111,8 @@ class MCFisherClassficator(Classificator):
         print(mi)
         print(Si)
         return [mi, ni, Si]
+
+    def classificate(self, x):
+        y = np.dot(self.W, x)
+        Y = np.dot(self.W, self.means)
+        #?
