@@ -2,7 +2,7 @@
 import numpy as np
 import math
 from SyntheticValues import ClassificationValuesGenerator
-from Classificators import FisherClassificator
+from DimensionalityReduction import Fisher
 from Plotter import plotClasses
 import argparse
 
@@ -17,14 +17,14 @@ if __name__ == "__main__":
         svg = ClassificationValuesGenerator(0, 10)
         classes, means = svg.getSyntheticValuesForClassification(numberOfDataPerClass, [[1, 0], [0, 1]], 2)
 
-        classificator = FisherClassificator()
+        classificator = Fisher()
         classificator.findW(classes[0], classes[1])
 
         # The way to use ClassificationValuesGenerator is a little dirty
         classificable, means = svg.getSyntheticValuesForClassificationWithMeans([50] * results.numberOfClasses, [[1, 0], [0, 1]], means)
         classificated = [[] for i in range(0, results.numberOfClasses)]
         # using the same trng points.
-        #classificable = classes
+        # classificable = classes
         for i in xrange(results.numberOfClasses):
             for point in classificable[i]:
                 cl = classificator.classificate(point)
