@@ -34,8 +34,11 @@ class Fisher():
         print(Si)
         return mi, Si
 
+    def reduceDimension(self, x):
+        return np.dot(self.w, x)
+
     def classificate(self, x):
-        return 0 if np.dot(self.w, x) > 0.5 * np.dot(self.w, self.m1 + self.m2) else 1
+        return 0 if self.reduceDimension(x) > 0.5 * np.dot(self.w, self.m1 + self.m2) else 1
         """
         y1 = np.dot(self.w, x - self.m1)
         y2 = -np.dot(self.w, x - self.m2)
@@ -61,9 +64,9 @@ class MCFisher():
 
     def calculateClass(self, cl):
         ni = len(cl)
-        cl_arr = np.array(cl)
-        mi = np.sum(cl_arr, axis = 0) / ni
-        V = [x - mi for x in cl_arr]
+        cl = np.array(cl)
+        mi = np.sum(cl, axis = 0) / ni
+        V = [x - mi for x in cl]
         Si = sum([np.outer(v, v) for v in V])
         print(mi)
         print(Si)
