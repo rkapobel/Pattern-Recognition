@@ -17,7 +17,7 @@ if __name__ == "__main__":
         svg = ClassificationValuesGenerator(0, 30)
         classes, means = svg.getSyntheticValuesForClassification(numberOfDataPerClass, [[1, 0], [0, 1]], 2)
  
-        classificator = MCLogisticRegression(lambda x: x) # identity
+        classificator = LogisticRegression(lambda x: x) # identity
         classificator.findW(classes)
 
         # The way to use ClassificationValuesGenerator is a little dirty

@@ -3,7 +3,7 @@ import numpy as np
 from numpy.linalg import inv
 import math
 
-threshold = 5
+threshold = .5
 
 class LogisticRegression:
     phi = None
@@ -70,7 +70,7 @@ class MCLogisticRegression:
         W_old = np.zeros([T.shape[1], phi_X.shape[1]]) #KxM
         self.W = float('inf') + W_old
         ita = 0.5
-        while np.linalg.norm(self.W[0] - W_old[0]) / (1.0 * len(phi_X)) > .5:
+        while np.linalg.norm(self.W[0] - W_old[0]) / (1.0 * len(phi_X)) > threshold:
             for i in xrange(W_old.shape[0]):
                 m = np.dot(phi_X, W_old[i])
                 v = [1 / (1 + np.exp(-wp)) for wp in m] - T.T[i]
