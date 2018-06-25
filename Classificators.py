@@ -18,11 +18,11 @@ class LinearClassificator(Classificator):
         X = []
 
         for i in xrange(len(classes)):
-            cl = classes[i]
+            ci = classes[i]
             t = [0] * len(classes)
             t[i] = 1
-            [X.append([1, x[0], x[1]]) for x in cl]
-            T.extend([t] * len(cl))
+            [X.append([1, x[0], x[1]]) for x in ci]
+            T.extend([t] * len(ci))
         
         X_matrix = np.array(X)
         Xt = X_matrix.T

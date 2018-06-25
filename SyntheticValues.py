@@ -56,7 +56,7 @@ class ClassificationValuesGenerator(object):
         K = len(numberOfPointsPerClass)
 
         for i in xrange(K):
-            print(means[i])
+            #print(means[i])
             X = np.random.multivariate_normal(means[i], cov, int(numberOfPointsPerClass[i])).T
             classes.append(map(list, zip(*X)))
 
