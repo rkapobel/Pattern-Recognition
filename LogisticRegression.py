@@ -3,6 +3,8 @@ import numpy as np
 from numpy.linalg import inv
 import math
 
+threshold = 5
+
 class LogisticRegression:
     phi = None
     w = None
@@ -21,20 +23,22 @@ class LogisticRegression:
 
         phi_X = self.phi(np.array(X))  
         t = np.array(t)
-        self.w = np.zeros(len(phi_X[0]))
+        w_old = np.zeros(len(phi_X[0]))
+        self.w = np.array([float('inf')] * len(phi_X[0]))
         phi_X_t = phi_X.T #2xN
-        for itNum in xrange(100): # threshold is number of iterations and distance between w_n and w_o
-            y = np.array([1 / (1 + np.exp(-np.dot(self.w, p))) for p in phi_X]) #Nx1
+        while np.linalg.norm(self.w - w_old, ord = 2) / (1.0 * len(phi_X))  > threshold:
+            y = np.array([1 / (1 + np.exp(-np.dot(w_old, p))) for p in phi_X]) #Nx1
             R = np.diag([s * (1 - s) for s in y]) #NxN
             L = np.dot(phi_X_t, R) #2xN
-            print(self.w)
             try:
                 M = inv(np.dot(L, phi_X))
-                z = np.dot(phi_X, self.w) - np.dot(inv(R), y - t)
-                self.w = np.dot(M, np.dot(L, z))
+                z = np.dot(phi_X, w_old) - np.dot(inv(R), y - t)
+                self.w = w_old
+                w_old = np.dot(M, np.dot(L, z))
             except np.linalg.LinAlgError as e:
                 print(e)
                 break
+        self.w = w_old
 
     def classificate(self, x):
         x_aux = [1]
@@ -63,18 +67,21 @@ class MCLogisticRegression:
         X = np.array(X) #NxD
         T = np.array(T) #NxK
         phi_X = self.phi(X) #NxM (phi: NxD -> NxM)
-        self.W = np.zeros([T.shape[1], phi_X.shape[1]]) #KxM
+        W_old = np.zeros([T.shape[1], phi_X.shape[1]]) #KxM
+        self.W = float('inf') + W_old
         ita = 0.5
-        for itNum in xrange(100):
-            for i in xrange(self.W.shape[0]):
-                m = np.dot(phi_X, self.W[i])
+        while np.linalg.norm(self.W[0] - W_old[0]) / (1.0 * len(phi_X)) > .5:
+            for i in xrange(W_old.shape[0]):
+                m = np.dot(phi_X, W_old[i])
                 v = [1 / (1 + np.exp(-wp)) for wp in m] - T.T[i]
                 j = 0
                 grad = np.zeros((phi_X.shape[1],))
                 for row in phi_X:
                     grad += row * v[j]
                     j += 1
-                self.W[i] -= ita * grad
+                self.W[i] = W_old[i]
+                W_old[i] -= ita * grad
+        self.W = W_old
                 
     def classificate(self, x):
         x_aux = [1]
