@@ -1,6 +1,5 @@
 #!/usr/bin/python
 import numpy as np
-from numpy.linalg import inv
 import math
 import random as rand
 
