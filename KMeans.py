@@ -34,6 +34,6 @@ class KMeans:
     def updateClusters(self, data, K, oldClusters):
         clusters = [[] for _ in xrange(K)]
         [clusters[np.argmin([np.linalg.norm(x - mu, ord = 2) for mu in self.centroids])].append(x) for x in data]
-        numOfChanges = sum([abs(len(clusters[i]) - len(oldClusters[i])) for i in xrange(K))])
+        numOfChanges = sum([abs(len(clusters[i]) - len(oldClusters[i])) for i in xrange(K)])
 
         return clusters, numOfChanges
