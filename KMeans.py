@@ -16,7 +16,7 @@ class KMeans:
             self.centroids.append(rand.choice(data))
         
         self.initialCentroids = self.centroids
-        clusters = self.updateClusters(data, K)
+        clusters = self.updateClusters(data, K, [[] for _ in xrange(K)])
         
         numOfChanges = 0
         maxIter = 100
