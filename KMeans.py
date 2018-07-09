@@ -2,6 +2,7 @@
 import numpy as np
 import math
 import random as rand
+from numpy.linalg import norm
 
 class KMeans:
 
@@ -34,6 +35,6 @@ class KMeans:
 
     def updateClusters(self, data, K, oldClusters):
         clusters = [[] for _ in xrange(K)]
-        [clusters[np.argmin([np.linalg.norm(np.array(x) - np.array(mu), ord = 2) for mu in self.centroids])].append(np.array(x)) for x in data]
+        [clusters[np.argmin([norm(np.array(x) - np.array(mu), ord = 2) for mu in self.centroids])].append(np.array(x)) for x in data]
 
         return clusters
