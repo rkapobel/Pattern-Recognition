@@ -25,14 +25,15 @@ class KMeans:
             for i in xrange(K):
                 self.centroids[i] = sum(clusters[i]) / (len(clusters[i]) * 1.0)
             numIter += 1
-            clusters, numOfChanges = self.updateClusters(data, K, clusters)
+            oldClusters = clusters
+            clusters = self.updateClusters(data, K, clusters)
+            numOfChanges = sum([abs(len(clusters[i]) - len(oldClusters[i])) for i in xrange(K)])
 
         self.totalIter = numIter
         self.clusters = clusters
 
     def updateClusters(self, data, K, oldClusters):
         clusters = [[] for _ in xrange(K)]
-        [clusters[np.argmin([np.linalg.norm(x - mu, ord = 2) for mu in self.centroids])].append(x) for x in data]
-        numOfChanges = sum([abs(len(clusters[i]) - len(oldClusters[i])) for i in xrange(K)])
+        [clusters[np.argmin([np.linalg.norm(np.array(x) - np.array(mu), ord = 2) for mu in self.centroids])].append(np.array(x)) for x in data]
 
-        return clusters, numOfChanges
+        return clusters
