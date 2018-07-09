@@ -23,11 +23,11 @@ if __name__ == "__main__":
             classificable.extend(cl)
 
         classificator1 = EM()
-        classificator1.expectationMaximization(classificable, results.numberOfClasses)
+        classificator1.expectationMaximization(classificable, results.numberOfClasses, means)
 
         classificator2 = KMeans()
         classificator2.calculateCentroids(classificable, results.numberOfClasses)
-        print('Cluster 1: {0} - Cluster 2: {1}'.format(len(classificator1.clusters[0]), len(classificator1.clusters[1])))
+        #print('Cluster 1: {0} - Cluster 2: {1}'.format(len(classificator1.clusters[0]), len(classificator1.clusters[1])))
         #print('Cluster EM: {0}'.format(classificator1.clusters))
         #print('Cluster K-Means: {0}'.format(classificator2.clusters))
         plotClasses(classificator1.clusters, [], "classification")

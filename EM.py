@@ -15,9 +15,12 @@ class EM:
     clusters = None
     totalIter = 0
 
-    def expectationMaximization(self, data, K):
-        for _ in xrange(K):
-            self.means.append(rand.choice(data))
+    def expectationMaximization(self, data, K, initialMeans):
+        if initialMeans != None:
+            self.means = initialMeans
+        else:
+            for _ in xrange(K):
+                self.means.append(rand.choice(data))
     
         [self.covs.append(np.identity(len(data[0]))) for _ in xrange(K)]
         self.mixtures = np.ones((K,))
@@ -26,10 +29,10 @@ class EM:
         maxIter = 15
         numIter = 0
         
-        loglikelihoodOld = float('Inf')
-        loglikelihoodNew = 0
-        while np.abs(loglikelihoodNew - loglikelihoodOld) > 1 or numIter <= maxIter:
-            print('LogLikeliHood {0}'.format(np.abs(loglikelihoodNew - loglikelihoodOld)))
+        loglikelihoodOld = 0
+        loglikelihoodNew = float('Inf')
+        while loglikelihoodNew - loglikelihoodOld > 1 and numIter <= maxIter:
+            #print('Loglikelihood diff {0}'.format(loglikelihoodNew - loglikelihoodOld))
             loglikelihoodOld = loglikelihoodNew
             loglikelihoodNew = self.expectation(data, K)
             self.maximitation(data, K)
@@ -82,6 +85,6 @@ class EM:
         self.clusters = [[] for _ in xrange(K)]
         for x in data:
             prob = [self.multivariateGaussian(x, k) for k in xrange(K)]
-            print('prob {0}'.format(prob))
+            #print('prob {0}'.format(prob))
             i = np.argmax(prob)
             self.clusters[i].append(x)
