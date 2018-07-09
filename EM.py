@@ -5,6 +5,8 @@ import random as rand
 from numpy.linalg import det
 from numpy.linalg import inv
 
+maxLoglikelihoodDiff = 1
+
 class EM:
     
     initialMeans = None
@@ -31,7 +33,7 @@ class EM:
         
         loglikelihoodOld = 0
         loglikelihoodNew = float('Inf')
-        while loglikelihoodNew - loglikelihoodOld > 1 and numIter <= maxIter:
+        while loglikelihoodNew - loglikelihoodOld > maxLoglikelihoodDiff and numIter <= maxIter:
             #print('Loglikelihood diff {0}'.format(loglikelihoodNew - loglikelihoodOld))
             loglikelihoodOld = loglikelihoodNew
             loglikelihoodNew = self.expectation(data, K)
