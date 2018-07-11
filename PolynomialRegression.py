@@ -32,7 +32,6 @@ class PolynomialRegression:
         return np.polynomial.polynomial.polyval(x, self.w)
 
     def error(self, data, checkData = True):
-        # Mmmmmmmh
         if checkData == True:
             self.checkData(data)
         self.checkW()

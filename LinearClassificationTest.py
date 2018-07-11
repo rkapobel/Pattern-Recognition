@@ -20,7 +20,6 @@ if __name__ == "__main__":
         classificator = LinearClassificator()
         classificator.findW(classes)
 
-        # The way to use ClassificationValuesGenerator is a little dirty
         classificable, means = svg.getSyntheticValuesForClassificationWithMeans([50] * results.numberOfClasses, [[1, 0], [0, 1]], means)
         classificated = [[] for i in range(0, results.numberOfClasses)]
         # using the same trng points.

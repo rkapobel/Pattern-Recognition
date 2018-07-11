@@ -42,6 +42,7 @@ def plotOriginalVsEstimated(fOriginal, fEstimated, data, trngData, f1Name, degre
     plot.savefig(os.path.join(myPath, imageName + ".pdf"))
 
 def plotClasses(classes, classificated, imageName):
+    #TODO: Consider to plot a legend.
     plot.clf()
     for i in xrange(len(classes)):
         cl = classes[i]

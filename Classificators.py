@@ -30,11 +30,11 @@ class LinearClassificator(Classificator):
             XtXInv = inv(np.dot(Xt, X))
             X_star = np.dot(XtXInv, Xt)
             self.W = np.dot(X_star, T)
-            print(self.W)
+            print('W: {0}'.format(self.W))
         except np.linalg.LinAlgError as e:
             print(e)
 
     def classificate(self, x):
         Y = np.dot(self.W.T, [1, x[0], x[1]])
-        print(Y)
+        print('Y: {0}'.format(Y)))
         return np.argmax(Y)

@@ -27,7 +27,7 @@ class LogisticRegression:
         self.w = np.array([float('inf')] * len(phi_X[0]))
         phi_X_t = phi_X.T #2xN
         while np.linalg.norm(self.w - w_old, ord = 2) / (1.0 * len(phi_X))  > threshold:
-            y = np.array([1 / (1 + np.exp(-np.dot(w_old, p))) for p in phi_X]) #Nx1
+            y = np.array([1 / (1 + np.exp(float(-np.dot(w_old, p)))) for p in phi_X]) #Nx1
             R = np.diag([s * (1 - s) for s in y]) #NxN
             L = np.dot(phi_X_t, R) #2xN
             try:
@@ -43,7 +43,7 @@ class LogisticRegression:
     def classificate(self, x):
         x_aux = [1]
         x_aux.extend(x)
-        prob = 1 / (1 + np.exp(np.dot(self.w, self.phi(x_aux))))
+        prob = 1 / (1 + np.exp(float(np.dot(self.w, self.phi(x_aux)))))
         return 1 if prob >= 0.5 else 0
 
 class MCLogisticRegression:
@@ -73,7 +73,7 @@ class MCLogisticRegression:
         while np.linalg.norm(self.W[0] - W_old[0]) / (1.0 * len(phi_X)) > threshold:
             for i in xrange(W_old.shape[0]):
                 m = np.dot(phi_X, W_old[i])
-                v = [1 / (1 + np.exp(-wp)) for wp in m] - T.T[i]
+                v = [1 / (1 + np.exp(float(-wp))) for wp in m] - T.T[i]
                 j = 0
                 grad = np.zeros((phi_X.shape[1],))
                 for row in phi_X:

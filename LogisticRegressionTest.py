@@ -15,13 +15,14 @@ if __name__ == "__main__":
     if results.numberOfClasses > 1:
         numberOfDataPerClass = np.random.uniform(80, 100, results.numberOfClasses)
         svg = ClassificationValuesGenerator(0, 30)
+
         classes, means = svg.getSyntheticValuesForClassification(numberOfDataPerClass, [[1, 0], [0, 1]], 2)
- 
+
         classificator = MCLogisticRegression(lambda x: x) # identity
         classificator.findW(classes)
 
-        # The way to use ClassificationValuesGenerator is a little dirty
         classificable, means = svg.getSyntheticValuesForClassificationWithMeans([50] * results.numberOfClasses, [[1, 0], [0, 1]], means)
+        
         classificated = [[] for i in range(0, results.numberOfClasses)]
         # using the same trng points.
         # classificable = classes

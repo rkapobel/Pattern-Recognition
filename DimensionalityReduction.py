@@ -13,8 +13,8 @@ class Fisher():
         S1 = self.calculateClass1(class1)
         S2 = self.calculateClass2(class2)
         self.Sw = S1 + S2
-        print(self.Sw)
         self.w = np.dot(inv(self.Sw), self.m1 - self.m2)
+        print('w: {0}'.format(self.w))
 
     def calculateClass1(self, class1):
         self.m1, S1 = self.calculateClass(class1)
@@ -30,8 +30,6 @@ class Fisher():
         mi = np.sum(cl_arr, axis = 0) / ni
         V = [x - mi for x in cl_arr]
         Si = sum([np.outer(v, v) for v in V])
-        print(mi)
-        print(Si)
         return mi, Si
 
     def reduceDimension(self, x):
@@ -39,13 +37,6 @@ class Fisher():
 
     def classificate(self, x):
         return 0 if self.reduceDimension(x) > 0.5 * np.dot(self.w, self.m1 + self.m2) else 1
-        """
-        y1 = np.dot(self.w, x - self.m1)
-        y2 = -np.dot(self.w, x - self.m2)
-        print(y1)
-        print(y2)
-        return 0 if y1 > y2 else 1
-        """
 
 class MCFisher():
     W = []
@@ -57,22 +48,30 @@ class MCFisher():
         self.means  = [val[0] for val in data]
         m = sum([val[0] * val[1] for val in data]) / sum([val[1] for val in data])
         Sw = sum([val[2] for val in data])
-        Sb = sum([np.outer(val[2] - m, val[2] - m) for val in data])
-        self.W, self.eigVal = np.linalg.eig(np.dot(inv(Sw), Sb)) 
-        print(self.W)
-        print(self.eigVal)
+        Sb = sum([val[1] * np.outer(val[0] - m, val[0] - m) for val in data])
+        self.eigVal, self.W = np.linalg.eig(np.dot(inv(Sw), Sb))
+
+        idx = self.eigVal.argsort()[::-1]   
+        self.eigVal = self.eigVal[idx][0: -1]
+        self.W = self.W[:,idx][0: -1]
+        
+        print('W: {0}'.format(self.W)) 
+        print('Eigen values: {0}'.format(self.eigVal))
 
     def calculateClass(self, cl):
-        ni = len(cl)
+        nk = len(cl)
         cl = np.array(cl)
-        mi = np.sum(cl, axis = 0) / ni
-        V = [x - mi for x in cl]
-        Si = sum([np.outer(v, v) for v in V])
-        print(mi)
-        print(Si)
-        return [mi, ni, Si]
+        mk = np.sum(cl, axis = 0) / nk
+        V = [x - mk for x in cl]
+        Sk = sum([np.outer(v, v) for v in V])
+        return [mk, nk, Sk]
 
     def reduceDimension(self, x):
         y = np.dot(self.W, x)
         return y
-    
+
+    def reduceDimensionToClasses(self, classes):
+        reduced = []
+        for cl in classes:
+            reduced.append([self.reduceDimension(x) for x in cl])
+        return reduced

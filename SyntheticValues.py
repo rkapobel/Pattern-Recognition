@@ -17,6 +17,7 @@ class RegressionValuesGenerator(object):
         self.f = f
         self.a = a
         self.b = b
+        np.random.seed(10000)
 
     @property
     def f(self):
@@ -43,6 +44,7 @@ class ClassificationValuesGenerator(object):
     def __init__(self, a, b):        
         self.a = a
         self.b = b
+        np.random.seed(10000)
         
     def getSyntheticValuesForClassification(self, numberOfPointsPerClass, cov, dim = 2): 
         K = len(numberOfPointsPerClass)
@@ -56,7 +58,6 @@ class ClassificationValuesGenerator(object):
         K = len(numberOfPointsPerClass)
 
         for i in xrange(K):
-            #print(means[i])
             X = np.random.multivariate_normal(means[i], cov, int(numberOfPointsPerClass[i])).T
             classes.append(map(list, zip(*X)))
 
