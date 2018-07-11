@@ -27,9 +27,11 @@ if __name__ == "__main__":
 
         classificator2 = KMeans()
         classificator2.calculateCentroids(classificable, results.numberOfClasses)
-        #print('Cluster 1: {0} - Cluster 2: {1}'.format(len(classificator1.clusters[0]), len(classificator1.clusters[1])))
+        
         #print('Cluster EM: {0}'.format(classificator1.clusters))
         #print('Cluster K-Means: {0}'.format(classificator2.clusters))
-        plotClasses(classificator1.clusters, [], "classification")
+
+        plotClasses(classificator1.clusters, [], "classification EM")
+        plotClasses(classificator2.clusters, [], "classification K-Means")
     else:
         raise ValueError("Number of classes must be greater than 1")

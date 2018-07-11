@@ -45,7 +45,15 @@ class ClassificationValuesGenerator(object):
         self.a = a
         self.b = b
         np.random.seed(10000)
-        
+
+    def getEllipticValuesForClassification(self):
+        numberOfDataPerClass = np.random.uniform(80, 100, 2)
+        means = [np.random.uniform(self.a, self.b, 1) for _ in xrange(2)]
+        means = map(list, zip(*means))
+        classes1, means1 = self.getSyntheticValuesForClassificationWithMeans(numberOfDataPerClass[0], [[1, 0], [0, 1]], means)
+        classes2, means2 = self.getSyntheticValuesForClassificationWithMeans(numberOfDataPerClass[1], [[3, 1], [0, 10]], means)
+        return [classes1[0], classes2[0]], [means1[0], means2[0]]
+
     def getSyntheticValuesForClassification(self, numberOfPointsPerClass, cov, dim = 2): 
         K = len(numberOfPointsPerClass)
         means = [np.random.uniform(self.a, self.b, K) for _ in xrange(dim)]
