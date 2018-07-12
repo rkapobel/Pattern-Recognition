@@ -18,7 +18,7 @@ if __name__ == "__main__":
     if results.test == 'a':
         numberOfDataPerClass = np.random.uniform(80, 100, 2)
         svg = ClassificationValuesGenerator(0, 10)
-        classes, means = svg.getSyntheticValuesForClassification(numberOfDataPerClass, [[1, 0], [0, 1]], 2)
+        classes, means = svg.getSyntheticValuesForClassification(numberOfDataPerClass, [[1, 0], [0, 1]])
 
         lda = Fisher()
         lda.findW(classes[0], classes[1])

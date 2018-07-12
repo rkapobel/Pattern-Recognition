@@ -19,7 +19,7 @@ if __name__ == "__main__":
             numberOfDataPerClass = np.random.uniform(80, 100, results.numberOfClasses)
             svg = ClassificationValuesGenerator(0, 30)
 
-            classes, means = svg.getSyntheticValuesForClassification(numberOfDataPerClass, [[1, 0], [0, 1]], 2)
+            classes, means = svg.getSyntheticValuesForClassification(numberOfDataPerClass, [[1, 0], [0, 1]])
 
             classificator = MCLogisticRegression(lambda x: [1, x[0], x[1]]) # linear
             classificator.findW(classes)
@@ -45,7 +45,7 @@ if __name__ == "__main__":
 
         classes, means = svg.getEllipticValuesForClassification()
 
-        classificator = MCLogisticRegression(lambda x: [1, x[0], x[1], x[0]**2, x[0]*x[1], x[1]**2]) # elliptic
+        classificator = MCLogisticRegression(lambda x: [1, x[0], x[1], x[0]**2, x[0]*x[1], x[1]**2]) # elliptic # Works fine using LogisticRegression
         classificator.findW(classes)
 
         #TODO: Generate data for test
@@ -61,6 +61,6 @@ if __name__ == "__main__":
                 classificated[cl].append(point)
                 print("point {0} in class {1} must be {2}".format(point, cl, i))
 
-        plotClasses(classes, [], "classification")
+        plotClasses(classes, classificated, "classification")
     else:
         raise ValueError("Test must be a or b.")

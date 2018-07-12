@@ -2,6 +2,7 @@
 import numpy as np
 from numpy.linalg import inv
 import math
+from scipy.special import expit
 
 threshold = .5
 
@@ -18,23 +19,23 @@ class LogisticRegression:
 
         for i in xrange(len(classes)):
             ci = classes[i]
-            [phi_X.append(self.phi(x)) for x in ci]
+            [phi_X.append(self.phi(x)) for x in ci] #NxM (phi: NxD -> NxM)
             t.extend([1 - i] * len(ci))
 
         phi_X = np.array(phi_X)  
         t = np.array(t)
-        w_old = np.zeros(len(phi_X[0]))
+        w_old = np.zeros((len(phi_X[0]),)) # Did not like to start with random
         self.w = np.array([float('inf')] * len(phi_X[0]))
-        phi_X_t = phi_X.T #2xN
+        phi_X_t = phi_X.T #MxN
         val = float('inf')
         maxIter = 15
         numIter = 0
         while val  > threshold and numIter <= maxIter:
             y = np.array([1 / (1 + np.exp(float(-np.dot(w_old, p)))) for p in phi_X]) #Nx1
             R = np.diag([s * (1 - s) for s in y]) #NxN
-            L = np.dot(phi_X_t, R) #2xN
+            L = np.dot(phi_X_t, R) #MxN
             try:
-                M = inv(np.dot(L, phi_X))
+                M = inv(np.dot(L, phi_X)) #MxNxNxM
                 z = np.dot(phi_X, w_old) - np.dot(inv(R), y - t)
                 self.w = w_old
                 w_old = np.dot(M, np.dot(L, z))
@@ -47,8 +48,8 @@ class LogisticRegression:
         self.w = w_old
 
     def classificate(self, x):
-        prob = 1 / (1 + np.exp(float(np.dot(self.w, self.phi(x)))))
-        return 1 if prob >= 0.5 else 0
+        prob = 1 / (1 + np.exp(float(-np.dot(self.w, self.phi(x)))))
+        return 0 if prob >= 0.5 else 1
 
 class MCLogisticRegression:
     phi = None
@@ -70,8 +71,8 @@ class MCLogisticRegression:
 
         phi_X = np.array(phi_X) #NxM
         T = np.array(T) #NxK
-        print('phi(X) {0}'.format(phi_X))
-        W_old = np.zeros([T.shape[1], phi_X.shape[1]]) #KxM
+        print('phi(X): {0}'.format(phi_X))
+        W_old = np.zeros((T.shape[1], phi_X.shape[1])) #KxM
         self.W = float('inf') + W_old
         ita = 0.5
         val = float('inf')
@@ -80,7 +81,12 @@ class MCLogisticRegression:
         while val > threshold and numIter <= maxIter:
             for i in xrange(W_old.shape[0]):
                 m = np.dot(phi_X, W_old[i])
-                v = [1 / (1 + np.exp(float(-wp))) for wp in m] - T.T[i]
+                sig = [1 / (1 + np.exp(float(-wp))) for wp in m]
+                #sig = [expit(wp) for wp in m]
+                print('sig: {0}'.format(sig))
+                print('Tt: {0}'.format(T.T[i]))
+                v =  sig - T.T[i]
+                print('v: {0}'.format(v))
                 j = 0
                 grad = np.zeros((phi_X.shape[1],))
                 for row in phi_X:
@@ -92,6 +98,12 @@ class MCLogisticRegression:
             print('val: {0}'.format(val))
             numIter += 1
         self.W = W_old
+        print('W: {0}'.format(self.W))
                 
     def classificate(self, x):
-        return np.argmax(np.dot(self.W, self.phi(x)))
+        Wp = np.dot(self.W, self.phi(x))
+        sig = []
+        for wp in Wp:
+            sig.append(1 / (1 + np.exp(float(-wp))))
+        print('sig: {0}'.format(sig))
+        return np.argmax(sig)
