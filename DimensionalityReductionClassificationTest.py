@@ -45,7 +45,7 @@ if __name__ == "__main__":
             lda = MCFisher()
             lda.findW(classes)
 
-            classificator = MCLogisticRegression(lambda x: x) # identity
+            classificator = MCLogisticRegression(lambda x: [1, x[0], x[1]]) # linear
             classificator.findW(lda.reduceDimensionToClasses(classes))                
 
             classificable, means = svg.getSyntheticValuesForClassificationWithMeans([50] * results.numberOfClasses, [[1, 0, 0], [0, 1, 0], [0, 0, 1]], means)

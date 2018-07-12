@@ -21,7 +21,7 @@ if __name__ == "__main__":
 
             classes, means = svg.getSyntheticValuesForClassification(numberOfDataPerClass, [[1, 0], [0, 1]], 2)
 
-            classificator = MCLogisticRegression(lambda x: x) # identity
+            classificator = MCLogisticRegression(lambda x: [1, x[0], x[1]]) # linear
             classificator.findW(classes)
 
             classificable, means = svg.getSyntheticValuesForClassificationWithMeans([50] * results.numberOfClasses, [[1, 0], [0, 1]], means)
@@ -45,8 +45,21 @@ if __name__ == "__main__":
 
         classes, means = svg.getEllipticValuesForClassification()
 
-        classificator = MCLogisticRegression(lambda x: [1, x[0], x[1], x[0]**2, x[0]*x[1], x[1]**2]) # identity
+        classificator = MCLogisticRegression(lambda x: [1, x[0], x[1], x[0]**2, x[0]*x[1], x[1]**2]) # elliptic
         classificator.findW(classes)
+
+        #TODO: Generate data for test
+
+        classificated = [[] for i in range(0, 2)]
+        
+        # using the same trng points.
+        classificable = classes
+        
+        for i in xrange(2):
+            for point in classificable[i]:
+                cl = classificator.classificate(point)
+                classificated[cl].append(point)
+                print("point {0} in class {1} must be {2}".format(point, cl, i))
 
         plotClasses(classes, [], "classification")
     else:

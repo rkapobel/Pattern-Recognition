@@ -46,13 +46,33 @@ class ClassificationValuesGenerator(object):
         self.b = b
         np.random.seed(10000)
 
+    def getEllipticValues(self, circle_r, numValues):
+        # center of the circle (x, y)
+        circle_x = 5
+        circle_y = 7
+
+        values = []
+        mean = [circle_x, circle_y]
+
+        for _ in xrange(int(numValues)):
+            # random angle
+            alpha = 2 * math.pi * np.random.random()
+            # random radius
+            r = circle_r * np.random.uniform(1, 5, 1)
+            # calculating coordinates
+            x = r * math.cos(alpha) + circle_x
+            y = r * math.sin(alpha) + circle_y
+            values.append([x[0], y[0]])
+
+        return values, mean
+
     def getEllipticValuesForClassification(self):
         numberOfDataPerClass = np.random.uniform(80, 100, 2)
-        means = [np.random.uniform(self.a, self.b, 1) for _ in xrange(2)]
-        means = map(list, zip(*means))
-        classes1, means1 = self.getSyntheticValuesForClassificationWithMeans(numberOfDataPerClass[0], [[1, 0], [0, 1]], means)
-        classes2, means2 = self.getSyntheticValuesForClassificationWithMeans(numberOfDataPerClass[1], [[3, 1], [0, 10]], means)
-        return [classes1[0], classes2[0]], [means1[0], means2[0]]
+
+        class1, mean1 = self.getEllipticValues(10, numberOfDataPerClass[0])
+        class2, mean2 = self.getEllipticValues(90, numberOfDataPerClass[1])
+
+        return [class1, class2], [mean1, mean2]
 
     def getSyntheticValuesForClassification(self, numberOfPointsPerClass, cov, dim = 2): 
         K = len(numberOfPointsPerClass)

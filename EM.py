@@ -32,7 +32,7 @@ class EM:
         numIter = 0
         
         loglikelihoodOld = 0
-        loglikelihoodNew = float('Inf')
+        loglikelihoodNew = float('inf')
         while loglikelihoodNew - loglikelihoodOld > maxLoglikelihoodDiff and numIter <= maxIter:
             #print('Loglikelihood diff {0}'.format(loglikelihoodNew - loglikelihoodOld))
             loglikelihoodOld = loglikelihoodNew
