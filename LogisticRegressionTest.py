@@ -21,7 +21,7 @@ if __name__ == "__main__":
 
             classes, means = svg.getSyntheticValuesForClassification(numberOfDataPerClass, [[1, 0], [0, 1]])
 
-            classificator = MCLogisticRegression(lambda x: [1, x[0], x[1]]) # linear
+            classificator = MCLogisticRegression(lambda x: [-1, x[0], x[1], x[0]**2, x[0]*x[1], x[1]**2]) # linear
             classificator.findW(classes)
 
             classificable, means = svg.getSyntheticValuesForClassificationWithMeans([50] * results.numberOfClasses, [[1, 0], [0, 1]], means)
@@ -45,7 +45,7 @@ if __name__ == "__main__":
 
         classes, means = svg.getEllipticValuesForClassification()
 
-        classificator = MCLogisticRegression(lambda x: [1, x[0], x[1], x[0]**2, x[0]*x[1], x[1]**2]) # elliptic # Works fine using LogisticRegression
+        classificator = MCLogisticRegression(lambda x: [-1, x[0], x[1], x[0]**2, x[0]*x[1], x[1]**2]) # elliptic # Works fine using LogisticRegression
         classificator.findW(classes)
 
         #TODO: Generate data for test
