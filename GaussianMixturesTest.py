@@ -15,7 +15,7 @@ if __name__ == "__main__":
     results = parser.parse_args()
     if results.numberOfClasses > 1:
         numberOfDataPerClass = np.random.uniform(80, 100, results.numberOfClasses)
-        svg = ClassificationValuesGenerator(0, 30)
+        svg = ClassificationValuesGenerator(0, 10)
         trainingData, means = svg.getSyntheticValuesForClassification(numberOfDataPerClass, [[1, 0], [0, 1]])
  
         classificable = []
@@ -31,7 +31,7 @@ if __name__ == "__main__":
         #print('Cluster EM: {0}'.format(classificator1.clusters))
         #print('Cluster K-Means: {0}'.format(classificator2.clusters))
 
-        plotClasses(classificator1.clusters, [], "classification EM")
-        plotClasses(classificator2.clusters, [], "classification K-Means")
+        plotClasses(trainingData, classificator1.clusters, "classification EM")
+        plotClasses(trainingData, classificator2.clusters, "classification K-Means")
     else:
         raise ValueError("Number of classes must be greater than 1")
