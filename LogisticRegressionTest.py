@@ -1,17 +1,19 @@
 #!/usr/bin/python
 import numpy as np
 import math
-from SyntheticValues import ClassificationValuesGenerator
+from SyntheticValues import ClassificationValuesGenerator, getEllipticValuesForClassification
 from LogisticRegression import NRLogisticRegression, MCLogisticRegression
 from LogisticRegression import LINEAR, CIRCULAR, ELLIPTIC
 from Plotter import plotClasses
 import argparse
 
-parser = argparse.ArgumentParser(description="Logistic Regression of K classes with D = 2.")
+parser = argparse.ArgumentParser(description="Logistic Regression of K  trainingData with D = 2.")
 parser.add_argument("-t", action="store", dest="test", type=str, default='a',
                     help="t in [a, b]. Test a: Linear classification. Test b: Elliptic classification.")
 parser.add_argument("-k", action="store", dest="numberOfClasses", type=int, default=2,
-                    help="Number of classses used in test a.")
+                    help="Number of classses used in test a. Default = 2.")
+parser.add_argument("-e", action="store", dest="testUsingNewData", type=bool, default=True,
+                    help="Test de classifier using a different data set.")
 
 def dataSetTestATraining():
     numberOfDataPerClass = np.random.uniform(80, 100, results.numberOfClasses)
@@ -20,49 +22,43 @@ def dataSetTestATraining():
     
 def dataSetTestATest(means):
     svg = ClassificationValuesGenerator(0, 30)
-    classes, means = svg.getSyntheticValuesForClassificationWithMeans([50] * results.numberOfClasses, [[1, 0], [0, 1]], means)
-    return classes
+    testData, means = svg.getSyntheticValuesForClassificationWithMeans([50] * results.numberOfClasses, [[1, 0], [0, 1]], means)
+    return  testData
 
-def dataSetTestBTraining():
-    svg = ClassificationValuesGenerator(0, 30)
-    return svg.getEllipticValuesForClassification()
+def classificateData(classificator, trainingData, testData, numberOfClasses, fileName):
+    classificated = [[] for i in range(0, numberOfClasses)]
+        
+    for i in xrange(numberOfClasses):
+        for point in testData[i]:
+            ci = classificator.classificate(point)
+            classificated[ci].append(point)
+            print("point {0} in class {1} must be {2}".format(point, ci, i))
+    
+    plotClasses(trainingData, classificated, fileName)
 
 if __name__ == "__main__":
     results = parser.parse_args()
     if results.test == 'a':
         if results.numberOfClasses > 1:
-            classes, means = dataSetTestATraining()
+            trainingData, means = dataSetTestATraining()
             classificator = MCLogisticRegression(LINEAR)
-            classificator.findW(classes)
-            classificable = dataSetTestATest(means)
-            classificated = [[] for i in range(0, results.numberOfClasses)]
-            # using the same trng points.
-            classificable = classes
-            
-            for i in xrange(results.numberOfClasses):
-                for point in classificable[i]:
-                    cl = classificator.classificate(point)
-                    classificated[cl].append(point)
-                    print("point {0} in class {1} must be {2}".format(point, cl, i))
-            
-            plotClasses(classes, classificated, "classification")
+            classificator.findW(trainingData)
+                       
+            if not results.testUsingNewData:
+                classificateData(classificator, trainingData, trainingData, results.numberOfClasses, "logisticRegressionTestA")
+            else:
+                classificateData(classificator, trainingData, dataSetTestATest(means), results.numberOfClasses, "logisticRegressionTestA")
         else:
-            raise ValueError("Number of classes must be greater than 1")
+            raise ValueError("Number of trainingData must be greater than 1")
     elif results.test == 'b':
-        classes, means = dataSetTestBTraining()
+        trainingData, means = getEllipticValuesForClassification()
         classificator = NRLogisticRegression(ELLIPTIC)
-        classificator.findW(classes)
-        #TODO: Generate data for test
-        classificated = [[] for i in range(0, 2)]
-        # using the same trng points.
-        classificable = classes
-        
-        for i in xrange(2):
-            for point in classificable[i]:
-                cl = classificator.classificate(point)
-                classificated[cl].append(point)
-                print("point {0} in class {1} must be {2}".format(point, cl, i))
+        #classificator = MCLogisticRegression(ELLIPTIC, regularize=True)
+        classificator.findW(trainingData)
 
-        plotClasses(classes, classificated, "classification")
+        if not results.testUsingNewData:
+            classificateData(classificator, trainingData,  trainingData, 2, "logisticRegressionTestB")
+        else:
+            classificateData(classificator, trainingData, getEllipticValuesForClassification()[0], 2, "logisticRegressionTestB")
     else:
         raise ValueError("Test must be a or b.")

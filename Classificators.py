@@ -36,5 +36,5 @@ class LinearClassificator(Classificator):
 
     def classificate(self, x):
         Y = np.dot(self.W.T, [1, x[0], x[1]])
-        print('Y: {0}'.format(Y)))
+        print('Y: {0}'.format(Y))
         return np.argmax(Y)

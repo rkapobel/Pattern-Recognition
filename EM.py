@@ -28,7 +28,7 @@ class EM:
         self.mixtures = np.ones((K,))
         self.latents = np.zeros((len(data), K))
 
-        maxIter = 15
+        maxIter = 100
         numIter = 0
         
         loglikelihoodOld = 0
@@ -76,8 +76,6 @@ class EM:
             self.covs[k] *= 1 / float(Nk)
             self.mixtures[k] = Nk / float(len(data))
         
-        #TODO: Calculate the log likelihood to use as condition     
-
     def multivariateGaussian(self, x, k):
         c = 1 / math.sqrt((2 * math.pi * det(self.covs[k])))
         v = np.array(x) - np.array(self.means[k])
@@ -87,6 +85,5 @@ class EM:
         self.clusters = [[] for _ in xrange(K)]
         for x in data:
             prob = [self.multivariateGaussian(x, k) for k in xrange(K)]
-            #print('prob {0}'.format(prob))
             i = np.argmax(prob)
             self.clusters[i].append(x)

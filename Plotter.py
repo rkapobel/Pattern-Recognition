@@ -10,6 +10,7 @@ colors = ["b", "g", "r", "c", "m", "y", "k", "w"]
 
 def plotErrorsByDegree(degrees, errors, imageName):
     plot.clf()
+    updatePlotParams()
     plot.plot(degrees, errors[0], "b-o", label="Training")
     plot.plot(degrees, errors[1], "r-o", label="Test")
     plot.legend(loc="upper right", shadow=True)
@@ -21,6 +22,7 @@ def plotErrorsByDegree(degrees, errors, imageName):
 
 def plotErrorsByLogLambda(lambdas, errors, imageName):
     plot.clf()
+    updatePlotParams()
     plot.plot(lambdas, errors[0], "b-o", label="Training")
     plot.plot(lambdas, errors[1], "r-o", label="Test")
     plot.legend(loc="upper right", shadow=True)
@@ -32,6 +34,7 @@ def plotErrorsByLogLambda(lambdas, errors, imageName):
     
 def plotOriginalVsEstimated(fOriginal, fEstimated, data, trngData, f1Name, degree, reg, imageName):
     plot.clf()
+    updatePlotParams()
     plot.plot(data, [fOriginal(x) for x in data], "b-", label=f1Name)
     plot.plot(data, [fEstimated(x) for x in data], "r-", label="Estimated")
     plot.plot(trngData[0], trngData[1], "bo", label="Training data")
@@ -43,17 +46,27 @@ def plotOriginalVsEstimated(fOriginal, fEstimated, data, trngData, f1Name, degre
     plot.savefig(os.path.join(myPath, imageName + ".pdf"))
 
 def plotClasses(classes, classificated, imageName):
-    #TODO: Consider to plot a legend.
     plot.clf()
+    updatePlotParams()
+
     for i in xrange(len(classes)):
         ci = classes[i]
         mark = colors[(i / len(markers)) % len(colors)] + markers[i % len(markers)]
-        [plot.plot(x[0], x[1], mark) for x in ci]
+        cx1, cx2 = zip(*ci)
+        plot.plot(cx1, cx2, mark, label="Training class {0}".format(i))
     
     for i in xrange(len(classificated)):
         ci = classificated[i]
-        for x in ci:
-            mark = colors[((i / len(markers)) + 1) % len(colors)] + markers[i % len(markers)]
-            plot.plot(x[0], x[1], mark)
+        mark = colors[((i / len(markers)) + 1) % len(colors)] + markers[i % len(markers)]
+        cx1, cx2 = zip(*ci)
+        plot.plot(cx1, cx2, mark, label="Test class {0}".format(i))
     
+    plot.legend(loc="upper right", shadow=True)
     plot.savefig(os.path.join(myPath, imageName + ".pdf"))
+
+def updatePlotParams():
+    params = {
+        'legend.fontsize': 7,
+        'legend.handlelength': 2
+    }
+    plot.rcParams.update(params)

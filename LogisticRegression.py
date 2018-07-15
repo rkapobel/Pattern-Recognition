@@ -81,8 +81,6 @@ class MCLogisticRegression(LogisticRegression):
 
         phi_X = np.array(phi_X) #NxM
         T = np.array(T) #NxK
-        print(phi_X)
-        print(T.T)
         n, m = phi_X.shape
         W_old = np.zeros((self.K, m) if self.K > 2 else (m,)) #KxM
         
