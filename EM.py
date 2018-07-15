@@ -53,7 +53,7 @@ class EM:
                 loglikelihood_n += val                
                 if k == K - 1:
                     self.latents[n][k] /= sum(self.latents[n])
-            loglikelihood += np.log(loglikelihood_n)
+            loglikelihood += math.log(loglikelihood_n)
             n += 1
         return loglikelihood
 
@@ -79,9 +79,9 @@ class EM:
         #TODO: Calculate the log likelihood to use as condition     
 
     def multivariateGaussian(self, x, k):
-        c = 1 / np.sqrt((2 * np.pi * det(self.covs[k])))
+        c = 1 / math.sqrt((2 * math.pi * det(self.covs[k])))
         v = np.array(x) - np.array(self.means[k])
-        return c * np.exp(-0.5 * np.dot(v, np.dot(inv(self.covs[k]), v)))
+        return c * math.exp(-0.5 * np.dot(v, np.dot(inv(self.covs[k]), v)))
 
     def clusterData(self, data, K):
         self.clusters = [[] for _ in xrange(K)]

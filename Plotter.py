@@ -1,10 +1,11 @@
 #!/usr/bin/python
 import matplotlib.pyplot as plot
 import os
+import numpy as np
 
 myPath = os.path.dirname(os.path.realpath(__file__))
 
-markers = ["x", "o", "v", ".", ",", "^", "<", ">", "s", "p", "P", "*", "h", "H", "+", "X", "D", "d", "|", "_", "1", "2", "3", "4", "8"]
+markers = ["x", "o", "v", "s", "p", "1", "2", "3", "4", "8", "*", "h", "H", "+", "X", "D", "d", "|", "_", ".", ",", "^", "<", ">"]
 colors = ["b", "g", "r", "c", "m", "y", "k", "w"]
 
 def plotErrorsByDegree(degrees, errors, imageName):
@@ -45,14 +46,14 @@ def plotClasses(classes, classificated, imageName):
     #TODO: Consider to plot a legend.
     plot.clf()
     for i in xrange(len(classes)):
-        cl = classes[i]
+        ci = classes[i]
         mark = colors[(i / len(markers)) % len(colors)] + markers[i % len(markers)]
-        [plot.plot(point[0], point[1], mark) for point in cl]
-
+        [plot.plot(x[0], x[1], mark) for x in ci]
+    
     for i in xrange(len(classificated)):
-        clPoints = classificated[i]
-        for point in clPoints:
+        ci = classificated[i]
+        for x in ci:
             mark = colors[((i / len(markers)) + 1) % len(colors)] + markers[i % len(markers)]
-            plot.plot(point[0], point[1], mark)
+            plot.plot(x[0], x[1], mark)
     
     plot.savefig(os.path.join(myPath, imageName + ".pdf"))

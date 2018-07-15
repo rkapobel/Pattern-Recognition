@@ -44,7 +44,7 @@ class ClassificationValuesGenerator(object):
     def __init__(self, a, b):        
         self.a = a
         self.b = b
-        np.random.seed(10000)
+        #np.random.seed(10000)
 
     def getEllipticValues(self, circle_r, numValues):
         # center of the circle (x, y)

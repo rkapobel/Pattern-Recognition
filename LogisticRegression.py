@@ -2,16 +2,26 @@
 import numpy as np
 from numpy.linalg import inv
 import math
-from scipy.special import expit
 
-threshold = .5
+LINEAR = lambda x: [1, x[0], x[1]]
+CIRCULAR = lambda x: [1, x[0]**2, x[1]**2]
+ELLIPTIC = lambda x: [1, x[0], x[1], x[0]**2, x[0]*x[1], x[1]**2]
 
 class LogisticRegression:
     phi = None
-    w = None
+    maxIter = 200
 
-    def __init__(self, phi):
-        self.phi = phi   
+    def __init__(self, phi, maxIter = 200):
+        self.phi = phi
+        self.maxIter = maxIter
+    
+    def sigmoid(self, gamma):
+        if gamma < 0:
+            return 1 - 1 / (1 + math.exp(gamma))
+        return 1 / (1 + math.exp(-gamma))
+
+class NRLogisticRegression(LogisticRegression):
+    w = None
 
     def findW(self, classes):
         phi_X = []
@@ -24,14 +34,13 @@ class LogisticRegression:
 
         phi_X = np.array(phi_X)  
         t = np.array(t)
-        w_old = np.zeros((len(phi_X[0]),)) # Did not like to start with random
-        self.w = np.array([float('inf')] * len(phi_X[0]))
+        n, m = phi_X.shape
+        w_old = np.zeros((m,)) # Did not like to start with random
+        self.w = np.array([float('inf')] * m)
         phi_X_t = phi_X.T #MxN
-        val = float('inf')
-        maxIter = 15
         numIter = 0
-        while val  > threshold and numIter <= maxIter:
-            y = np.array([1 / (1 + np.exp(float(-np.dot(w_old, p)))) for p in phi_X]) #Nx1
+        while numIter <= self.maxIter:
+            y = np.array([self.sigmoid(np.dot(w_old, p)) for p in phi_X]) #Nx1
             R = np.diag([s * (1 - s) for s in y]) #NxN
             L = np.dot(phi_X_t, R) #MxN
             try:
@@ -42,70 +51,77 @@ class LogisticRegression:
             except np.linalg.LinAlgError as e:
                 print(e)
                 break
-            val = np.linalg.norm(self.w - w_old, ord = 2) / (1.0 * len(phi_X))
-            print('val: {0}'.format(val))
             numIter += 1
         self.w = w_old
 
     def classificate(self, x):
-        prob = 1 / (1 + np.exp(float(-np.dot(self.w, self.phi(x)))))
-        return 0 if prob >= 0.5 else 1
+        return 0 if self.sigmoid(np.dot(self.w, self.phi(x))) >= 0.5 else 1
 
-class MCLogisticRegression:
-    phi = None
+class MCLogisticRegression(LogisticRegression):
     W = None
+    regularize = False
+    alpha = 1
 
-    def __init__(self, phi):
-        self.phi = phi 
+    def __init__(self, phi, maxIter = 200, regularize = False, alpha = 1):
+        LogisticRegression.__init__(self, phi, maxIter)
+        self.regularize = regularize
+        self.alpha = alpha
 
     def findW(self, classes):
         phi_X = []
         T = []
 
-        for i in xrange(len(classes)):
+        self.K = len(classes)
+        for i in xrange(self.K):
             ci = classes[i]
             [phi_X.append(self.phi(x)) for x in ci] #NxM (phi: NxD -> NxM)
-            t = [0] * len(classes)
-            t[i] = 1 + i
+            t = [0] * self.K
+            t[i] = 1
             T.extend([t] * len(ci))
 
         phi_X = np.array(phi_X) #NxM
         T = np.array(T) #NxK
-        print('phi(X): {0}'.format(phi_X))
-        W_old = np.zeros((T.shape[1], phi_X.shape[1])) #KxM
-        self.W = float('inf') + W_old
-        ita = 0.5
-        val = float('inf')
-        maxIter = 200
-        numIter = 0
-        while val > threshold and numIter <= maxIter:
-            for i in xrange(W_old.shape[0]):
-                m = np.dot(phi_X, W_old[i])
-                sig = [1 / (1 + np.exp(float(-wp))) for wp in m]
-                #sig = [expit(wp) for wp in m]
-                #print('sig: {0}'.format(sig))
-                #print('Tt: {0}'.format(T.T[i]))
-                v =  sig - T.T[i]
-                #print('v: {0}'.format(v))
+        print(phi_X)
+        print(T.T)
+        n, m = phi_X.shape
+        W_old = np.zeros((self.K, m) if self.K > 2 else (m,)) #KxM
+        
+        for i in xrange(self.K if self.K > 2 else 1):
+            numIter = 0
+            while numIter <= self.maxIter:    
+                wi = W_old[i] if self.K > 2 else W_old
+                gammas = np.dot(phi_X, wi)
+                sigmoids = [self.sigmoid(gamma) for gamma in gammas]
+                diff =  sigmoids - T.T[i]
                 j = 0
-                grad = np.zeros((phi_X.shape[1],))
-                for row in phi_X:
-                    grad += row * v[j]
+                gradient = np.zeros((m,))
+                for x in phi_X:
+                    gradient += x * diff[j]
                     j += 1
-                self.W[i] = W_old[i]
-                W_old[i] -= ita * grad
-                print('wi updated {0}'.format(W_old))
-            val = np.linalg.norm(self.W[0] - W_old[0]) / (1.0 * len(phi_X))
-            #print('val: {0}'.format(val))
-            numIter += 1
+                
+                if self.regularize:
+                    regTerm = wi
+                    regTerm[0] = 0
+                    wi -= (self.alpha / float(n)) * (gradient + regTerm)
+                else:
+                    wi -= (self.alpha / float(n)) * gradient
+
+                if self.K > 2:
+                    W_old[i] = wi
+                else: 
+                    W_old = wi
+
+                numIter += 1
         self.W = W_old
         print('W: {0}'.format(self.W))
                 
     def classificate(self, x):
-        Wp = np.dot(self.W, self.phi(x))
-        #print('Wp: {0}'.format(Wp))
-        sig = []
-        for wp in Wp:
-            sig.append(1 / (1 + np.exp(float(-wp))))
-        #print('sig: {0}'.format(sig))
-        return np.argmax(sig)
+        if self.K == 2:
+            gamma = np.dot(self.W, self.phi(x))
+            return 0 if gamma >= 0.5 else 1
+
+        gammas = np.dot(self.W, self.phi(x))
+        sigmoids = []
+        for gamma in gammas:
+            sigmoids.append(self.sigmoid(gamma))
+        return np.argmax(sigmoids)

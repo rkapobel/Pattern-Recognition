@@ -2,7 +2,8 @@
 import numpy as np
 import math
 from SyntheticValues import ClassificationValuesGenerator
-from LogisticRegression import LogisticRegression, MCLogisticRegression
+from LogisticRegression import NRLogisticRegression, MCLogisticRegression
+from LogisticRegression import LINEAR, CIRCULAR, ELLIPTIC
 from Plotter import plotClasses
 import argparse
 
@@ -12,24 +13,31 @@ parser.add_argument("-t", action="store", dest="test", type=str, default='a',
 parser.add_argument("-k", action="store", dest="numberOfClasses", type=int, default=2,
                     help="Number of classses used in test a.")
 
+def dataSetTestATraining():
+    numberOfDataPerClass = np.random.uniform(80, 100, results.numberOfClasses)
+    svg = ClassificationValuesGenerator(0, 30)
+    return svg.getSyntheticValuesForClassification(numberOfDataPerClass, [[1, 0], [0, 1]])
+    
+def dataSetTestATest(means):
+    svg = ClassificationValuesGenerator(0, 30)
+    classes, means = svg.getSyntheticValuesForClassificationWithMeans([50] * results.numberOfClasses, [[1, 0], [0, 1]], means)
+    return classes
+
+def dataSetTestBTraining():
+    svg = ClassificationValuesGenerator(0, 30)
+    return svg.getEllipticValuesForClassification()
+
 if __name__ == "__main__":
     results = parser.parse_args()
     if results.test == 'a':
         if results.numberOfClasses > 1:
-            numberOfDataPerClass = np.random.uniform(80, 100, results.numberOfClasses)
-            svg = ClassificationValuesGenerator(0, 30)
-
-            classes, means = svg.getSyntheticValuesForClassification(numberOfDataPerClass, [[1, 0], [0, 1]])
-
-            classificator = MCLogisticRegression(lambda x: [-1, x[0], x[1], x[0]**2, x[0]*x[1], x[1]**2]) # linear
+            classes, means = dataSetTestATraining()
+            classificator = MCLogisticRegression(LINEAR)
             classificator.findW(classes)
-
-            classificable, means = svg.getSyntheticValuesForClassificationWithMeans([50] * results.numberOfClasses, [[1, 0], [0, 1]], means)
-            
+            classificable = dataSetTestATest(means)
             classificated = [[] for i in range(0, results.numberOfClasses)]
-            
             # using the same trng points.
-            # classificable = classes
+            classificable = classes
             
             for i in xrange(results.numberOfClasses):
                 for point in classificable[i]:
@@ -41,17 +49,11 @@ if __name__ == "__main__":
         else:
             raise ValueError("Number of classes must be greater than 1")
     elif results.test == 'b':
-        svg = ClassificationValuesGenerator(0, 30)
-
-        classes, means = svg.getEllipticValuesForClassification()
-
-        classificator = MCLogisticRegression(lambda x: [-1, x[0], x[1], x[0]**2, x[0]*x[1], x[1]**2]) # elliptic # Works fine using LogisticRegression
+        classes, means = dataSetTestBTraining()
+        classificator = NRLogisticRegression(ELLIPTIC)
         classificator.findW(classes)
-
         #TODO: Generate data for test
-
         classificated = [[] for i in range(0, 2)]
-        
         # using the same trng points.
         classificable = classes
         
