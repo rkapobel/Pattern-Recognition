@@ -2,7 +2,7 @@
 import numpy as np
 import math
 from SyntheticValues import RegressionValuesGenerator
-from PolynomialRegression import PolynomialRegression
+from Algorithms.PolynomialRegression import PolynomialRegression
 from Plotter import plotErrorsByDegree, plotErrorsByLogLambda, plotOriginalVsEstimated
 import argparse
 

@@ -2,8 +2,8 @@
 import numpy as np
 import math
 from SyntheticValues import ClassificationValuesGenerator, getEllipticValuesForClassification
-from LogisticRegression import NRLogisticRegression, MCLogisticRegression
-from LogisticRegression import LINEAR, CIRCULAR, ELLIPTIC
+from Algorithms.LogisticRegression import NRLogisticRegression, MCLogisticRegression
+from Algorithms.LogisticRegression import LINEAR, CIRCULAR, ELLIPTIC
 from Plotter import plotClasses
 import argparse
 

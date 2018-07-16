@@ -2,8 +2,8 @@
 import numpy as np
 import math
 from SyntheticValues import ClassificationValuesGenerator
-from KMeans import KMeans
-from EM import EM
+from Algorithms.KMeans import KMeans
+from Algorithms.EM import EM
 from Plotter import plotClasses
 import argparse
 

@@ -3,7 +3,7 @@ import matplotlib.pyplot as plot
 import os
 import numpy as np
 
-myPath = os.path.dirname(os.path.realpath(__file__))
+myPath = os.path.dirname(os.path.realpath(__file__)) + "/Images/"
 
 markers = ["x", "o", "v", "s", "p", "1", "2", "3", "4", "8", "*", "h", "H", "+", "X", "D", "d", "|", "_", ".", ",", "^", "<", ">"]
 colors = ["b", "g", "r", "c", "m", "y", "k", "w"]

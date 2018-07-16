@@ -2,8 +2,8 @@
 import numpy as np
 import math
 from SyntheticValues import ClassificationValuesGenerator
-from DimensionalityReduction import Fisher, MCFisher
-from LogisticRegression import MCLogisticRegression
+from Algorithms.DimensionalityReduction import Fisher, MCFisher
+from Algorithms.LogisticRegression import MCLogisticRegression
 from Plotter import plotClasses
 import argparse
 

@@ -4,10 +4,9 @@ import math
 import random as rand
 from numpy.linalg import norm
 
-maxNumOfChangesPerGroup = 5
-
 class KMeans:
 
+    maxNumOfChangesAllowed = 2
     initialCentroids = None
     centroids = []
     clusters = None
@@ -21,15 +20,17 @@ class KMeans:
         clusters = self.clusterData(data, K, [[] for _ in xrange(K)])
         
         numOfChanges = 0
+        oldNumOfChanges = float('inf')
         maxIter = 100
         numIter = 0
         
-        while numOfChanges / (K * 1.0) > maxNumOfChangesPerGroup or numIter <= maxIter:
+        while abs(numOfChanges - oldNumOfChanges) >= self.maxNumOfChangesAllowed or numIter <= maxIter:
             for i in xrange(K):
                 self.centroids[i] = sum(clusters[i]) / (len(clusters[i]) * 1.0)
             numIter += 1
             oldClusters = clusters
             clusters = self.clusterData(data, K, clusters)
+            oldNumOfChanges = numOfChanges
             numOfChanges = sum([abs(len(clusters[i]) - len(oldClusters[i])) for i in xrange(K)])
 
         self.totalIter = numIter

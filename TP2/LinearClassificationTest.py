@@ -2,7 +2,7 @@
 import numpy as np
 import math
 from SyntheticValues import ClassificationValuesGenerator
-from Classificators import LinearClassificator
+from Algorithms.Classificators import LinearClassificator
 from Plotter import plotClasses
 import argparse
 
