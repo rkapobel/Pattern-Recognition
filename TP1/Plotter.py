@@ -3,7 +3,10 @@ import matplotlib.pyplot as plot
 import os
 import numpy as np
 
-myPath = os.path.dirname(os.path.realpath(__file__)) + "/Images/"
+imageDirectory = os.path.dirname(os.path.realpath(__file__)) + "/Images/"
+
+if not os.path.exists(imageDirectory):
+    os.makedirs(imageDirectory)
 
 markers = ["x", "o", "v", "s", "p", "1", "2", "3", "4", "8", "*", "h", "H", "+", "X", "D", "d", "|", "_", ".", ",", "^", "<", ">"]
 colors = ["b", "g", "r", "c", "m", "y", "k", "w"]
@@ -18,7 +21,7 @@ def plotErrorsByDegree(degrees, errors, imageName):
     plot.axes().set_xlabel("$M$")
     plot.axes().set_ylabel("$E_{drms}$")
     plot.yscale("log", nonposy="clip")
-    plot.savefig(os.path.join(myPath, imageName + ".pdf"))
+    plot.savefig(os.path.join(imageDirectory, imageName + ".pdf"))
 
 def plotErrorsByLogLambda(lambdas, errors, imageName):
     plot.clf()
@@ -30,7 +33,7 @@ def plotErrorsByLogLambda(lambdas, errors, imageName):
     plot.axes().set_xlabel("$log(\lambda)$")
     plot.axes().set_ylabel("$E_{rms}$")
     plot.yscale("log", nonposy="clip")
-    plot.savefig(os.path.join(myPath, imageName + ".pdf"))
+    plot.savefig(os.path.join(imageDirectory, imageName + ".pdf"))
     
 def plotOriginalVsEstimated(fOriginal, fEstimated, data, trngData, f1Name, degree, reg, imageName):
     plot.clf()
@@ -43,7 +46,7 @@ def plotOriginalVsEstimated(fOriginal, fEstimated, data, trngData, f1Name, degre
     plot.axes().set_xlabel("$x$")
     plot.axes().set_ylabel("$y$")
     plot.ylim(-3.1, 3.1)
-    plot.savefig(os.path.join(myPath, imageName + ".pdf"))
+    plot.savefig(os.path.join(imageDirectory, imageName + ".pdf"))
 
 def plotClasses(classes, classificated, imageName):
     plot.clf()
@@ -62,7 +65,7 @@ def plotClasses(classes, classificated, imageName):
         plot.plot(cx1, cx2, mark, label="Test class {0}".format(i))
     
     plot.legend(loc="upper right", shadow=True)
-    plot.savefig(os.path.join(myPath, imageName + ".pdf"))
+    plot.savefig(os.path.join(imageDirectory, imageName + ".pdf"))
 
 def updatePlotParams():
     params = {
