@@ -67,6 +67,21 @@ def plotClasses(classes, classificated, imageName):
     plot.legend(loc="upper right", shadow=True)
     plot.savefig(os.path.join(imageDirectory, imageName + ".pdf"))
 
+def plotCosts(epochs, costsPerClass, imageName):
+    plot.clf()
+    updatePlotParams()
+    i = 0
+    print(costsPerClass)
+    for costs in costsPerClass:
+        mark = colors[((i / len(markers)) + 1) % len(colors)] + markers[i % len(markers)]
+        plot.plot(epochs[0: len(costs)], costs, mark, label="Class {0}".format(i))
+        i += 1
+
+    plot.legend(loc="upper right", shadow=True)
+    plot.axes().set_xlabel("$Epochs$")
+    plot.axes().set_ylabel("$Cost$")
+    plot.savefig(os.path.join(imageDirectory, imageName + ".pdf"))
+
 def updatePlotParams():
     params = {
         'legend.fontsize': 7,
