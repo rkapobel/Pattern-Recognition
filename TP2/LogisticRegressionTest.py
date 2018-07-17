@@ -4,7 +4,7 @@ import math
 from SyntheticValues import ClassificationValuesGenerator, getEllipticValuesForClassification
 from Algorithms.LogisticRegression import NRLogisticRegression, MCLogisticRegression
 from Algorithms.LogisticRegression import LINEAR, CIRCULAR, ELLIPTIC
-from Plotter import plotClasses
+from Plotter import plotClasses, plotCosts
 import argparse
 
 parser = argparse.ArgumentParser(description="Logistic Regression of K  trainingData with D = 2.")
@@ -35,6 +35,7 @@ def classificateData(classificator, trainingData, testData, numberOfClasses, fil
             print("point {0} in class {1} must be {2}".format(point, ci, i))
     
     plotClasses(trainingData, classificated, fileName)
+    plotCosts(classificator.epochs, classificator.costs, fileName + 'costFunction')
 
 if __name__ == "__main__":
     results = parser.parse_args()

@@ -10,15 +10,31 @@ ELLIPTIC = lambda x: [1, x[0], x[1], x[0]**2, x[0]*x[1], x[1]**2]
 class LogisticRegression:
     phi = None
     maxIter = 200
+    costs = []
+    epochs = []
 
     def __init__(self, phi, maxIter = 200):
         self.phi = phi
         self.maxIter = maxIter
     
     def sigmoid(self, gamma):
-        if gamma < 0:
-            return 1 - 1 / (1 + math.exp(gamma))
-        return 1 / (1 + math.exp(-gamma))
+        sigmoids = []
+        #TODO: Figure out if it is possible to use np.exp
+        for a in gamma:
+            if a < 0:
+                sigmoids.append(1 - 1 / (1 + np.exp(a)))
+            else:
+                sigmoids.append(1 / (1 + np.exp(-a)))
+        return np.array(sigmoids)
+
+    def calculateCostFunction(self, w, phi_X, labels, numIter):
+        m = phi_X.shape[0]
+        h = self.sigmoid(np.dot(phi_X, w))
+        labels = np.array(labels)
+        return self.costFunction(h, labels, m)
+        
+    def costFunction(self, h, labels, m):
+        return (np.dot(-1 * labels, np.log(h)) - np.dot(1 - labels, np.log(1 - h))) / float(m)
 
 class NRLogisticRegression(LogisticRegression):
     w = None
@@ -27,10 +43,10 @@ class NRLogisticRegression(LogisticRegression):
         phi_X = []
         t = []
 
-        for i in xrange(len(classes)):
-            ci = classes[i]
-            [phi_X.append(self.phi(x)) for x in ci] #NxM (phi: NxD -> NxM)
-            t.extend([1 - i] * len(ci))
+        for k in xrange(len(classes)):
+            ck = classes[k]
+            [phi_X.append(self.phi(x)) for x in ck] #NxM (phi: NxD -> NxM)
+            t.extend([1 - k] * len(ck))
 
         phi_X = np.array(phi_X)  
         t = np.array(t)
@@ -39,30 +55,34 @@ class NRLogisticRegression(LogisticRegression):
         self.w = np.array([float('inf')] * m)
         phi_X_t = phi_X.T #MxN
         numIter = 0
+        self.epochs = list(range(self.maxIter))
+        allCosts = []
         while numIter <= self.maxIter:
-            y = np.array([self.sigmoid(np.dot(w_old, p)) for p in phi_X]) #Nx1
+            y = self.sigmoid(np.dot(phi_X, w_old)) #Nx1
             R = np.diag([s * (1 - s) for s in y]) #NxN
             L = np.dot(phi_X_t, R) #MxN
             try:
                 M = inv(np.dot(L, phi_X)) #MxNxNxM
                 z = np.dot(phi_X, w_old) - np.dot(inv(R), y - t)
-                self.w = w_old
                 w_old = np.dot(M, np.dot(L, z))
+                cost = self.calculateCostFunction(w_old, phi_X, t, numIter)
+                allCosts.append(cost)
             except np.linalg.LinAlgError as e:
                 print(e)
                 break
             numIter += 1
         self.w = w_old
+        self.costs.append(allCosts)
 
     def classificate(self, x):
-        return 0 if self.sigmoid(np.dot(self.w, self.phi(x))) >= 0.5 else 1
+        return 0 if self.sigmoid([np.dot(self.w, self.phi(x))]) >= 0.05 else 1
 
 class MCLogisticRegression(LogisticRegression):
     W = None
     regularize = False
     alpha = 1
 
-    def __init__(self, phi, maxIter = 200, regularize = False, alpha = 1):
+    def __init__(self, phi, maxIter = 200, regularize = False, alpha = 0.005):
         LogisticRegression.__init__(self, phi, maxIter)
         self.regularize = regularize
         self.alpha = alpha
@@ -83,14 +103,13 @@ class MCLogisticRegression(LogisticRegression):
         T = np.array(T) #NxK
         n, m = phi_X.shape
         W_old = np.zeros((self.K, m) if self.K > 2 else (m,)) #KxM
-        
-        for i in xrange(self.K if self.K > 2 else 1):
+        self.epochs = list(range(self.maxIter))
+        allCosts = []
+        for k in xrange(self.K if self.K > 2 else 1):
             numIter = 0
             while numIter <= self.maxIter:    
-                wi = W_old[i] if self.K > 2 else W_old
-                gammas = np.dot(phi_X, wi)
-                sigmoids = [self.sigmoid(gamma) for gamma in gammas]
-                diff =  sigmoids - T.T[i]
+                wk = W_old[k] if self.K > 2 else W_old
+                diff =  self.sigmoid(np.dot(phi_X, wk)) - T.T[k]
                 j = 0
                 gradient = np.zeros((m,))
                 for x in phi_X:
@@ -98,28 +117,29 @@ class MCLogisticRegression(LogisticRegression):
                     j += 1
                 
                 if self.regularize:
-                    regTerm = wi
+                    regTerm = wk
                     regTerm[0] = 0
-                    wi -= (self.alpha / float(n)) * (gradient + regTerm)
+                    wk -= (self.alpha / float(n)) * (gradient + regTerm)
                 else:
-                    wi -= (self.alpha / float(n)) * gradient
+                    wk -= (self.alpha / float(n)) * gradient
 
                 if self.K > 2:
-                    W_old[i] = wi
+                    W_old[k] = wk
                 else: 
-                    W_old = wi
+                    W_old = wk
+
+                cost = self.calculateCostFunction(wk, phi_X, T[:, k if self.K > 2 else 0], numIter)
+                allCosts.append(cost)
 
                 numIter += 1
         self.W = W_old
+
+        for i in range(0, len(allCosts), self.maxIter + 1):
+            self.costs.append(allCosts[i:i+self.maxIter])
+
         print('W: {0}'.format(self.W))
                 
     def classificate(self, x):
         if self.K == 2:
-            gamma = np.dot(self.W, self.phi(x))
-            return 0 if gamma >= 0.5 else 1
-
-        gammas = np.dot(self.W, self.phi(x))
-        sigmoids = []
-        for gamma in gammas:
-            sigmoids.append(self.sigmoid(gamma))
-        return np.argmax(sigmoids)
+            return 0 if self.sigmoid([np.dot(self.W, self.phi(x))]) >= 0.5 else 1
+        return np.argmax(self.sigmoid(np.dot(self.W, self.phi(x))))
