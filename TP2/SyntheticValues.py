@@ -45,11 +45,12 @@ class ClassificationValuesGenerator(object):
         self.a = a
         self.b = b
 
-    def getSyntheticValuesForClassification(self, numberOfPointsPerClass, cov, dim = 2): 
+    def getSyntheticValuesForClassification(self, numberOfPointsPerClass, dim = 2): 
         K = len(numberOfPointsPerClass)
+        cov = np.diag([1 for _ in range(dim)])
         means = [np.random.uniform(self.a, self.b, K) for _ in xrange(dim)]
         means = map(list, zip(*means))
-        return self.getSyntheticValuesForClassificationWithMeans(numberOfPointsPerClass, cov, means)
+        return [self.getSyntheticValuesForClassificationWithMeans(numberOfPointsPerClass, cov, means), cov, means]
 
     def getSyntheticValuesForClassificationWithMeans(self, numberOfPointsPerClass, cov, means):
         data = []
@@ -60,7 +61,7 @@ class ClassificationValuesGenerator(object):
             X = np.random.multivariate_normal(means[i], cov, int(numberOfPointsPerClass[i])).T
             data.append(map(list, zip(*X)))
 
-        return data, means
+        return data
 
 def getEllipticValues(circle_r, numValues):
     # center of the circle (x, y)

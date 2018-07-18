@@ -10,29 +10,29 @@ import argparse
 parser = argparse.ArgumentParser(description="Fisher linear discriminant analysis.")
 parser.add_argument("-t", action="store", dest="test", type=str, default='a',
                     help="t in [a, b]. Test a: Fisher classification with 2 classes from 2-Dimensional space. Test b: Fisher classification with 3 classes from 3-Dimensional space. Default = a.")
-parser.add_argument("-e", action="store", dest="testUsingNewData", type=bool, default=True,
-                    help="Test de classifier using a different data set.")
+parser.add_argument("-e", action="store", dest="testUsingTrainingData", type=int, default=1,
+                    help="1: Test de classifier using a different data set. 0: Test using the training data set.")
+parser.add_argument("-d", action="store", dest="dimension", type=int, default=0,
+                    help="If not indicated, test A will run with D = 2 and test B will run with D = 3. Must be greater or equal than 2")
 
-def dataSetTestATraining():
+def dataSetTestATraining(dim):
     numberOfDataPerClass = np.random.uniform(80, 100, 2)
     svg = ClassificationValuesGenerator(0, 10)
-    return svg.getSyntheticValuesForClassification(numberOfDataPerClass, [[1, 0], [0, 1]])
+    return svg.getSyntheticValuesForClassification(numberOfDataPerClass, dim)
 
-def dataSetTestATest(means):
+def dataSetTestATest(cov, means):
     svg = ClassificationValuesGenerator(0, 10)
-    testData, means = svg.getSyntheticValuesForClassificationWithMeans([50] * 2, [[1, 0], [0, 1]], means)
-    return testData
-
-def dataSetTestBTraining():
+    return svg.getSyntheticValuesForClassificationWithMeans([50] * 2, cov, means)
+    
+def dataSetTestBTraining(dim):
     numberOfDataPerClass = np.random.uniform(80, 100, 3)
     svg = ClassificationValuesGenerator(0, 10)
-    return svg.getSyntheticValuesForClassification(numberOfDataPerClass, [[1, 0, 0], [0, 1, 0], [0, 0, 1]], 3)
+    return svg.getSyntheticValuesForClassification(numberOfDataPerClass, dim)
             
-def dataSetTestBTest(means):
+def dataSetTestBTest(cov, means):
     svg = ClassificationValuesGenerator(0, 10)
-    testData, means = svg.getSyntheticValuesForClassificationWithMeans([50] * 3, [[1, 0, 0], [0, 1, 0], [0, 0, 1]], means)
-    return testData
-
+    return svg.getSyntheticValuesForClassificationWithMeans([50] * 3, cov, means)
+    
 def classificateData(classificator, trainingData, testData, numberOfClasses, fileName):
     classificated = [[] for i in range(0, numberOfClasses)]
         
@@ -46,31 +46,46 @@ def classificateData(classificator, trainingData, testData, numberOfClasses, fil
 
 if __name__ == "__main__":
     results = parser.parse_args()
+  
+    dim = results.dimension
+    if dim == 0:
+        if results.test == 'a':
+            dim = 2
+        else:
+            dim = 3
+
     if results.test == 'a':
-        trainingData, means = dataSetTestATraining()
+        values = dataSetTestATraining(dim)
+        
+        trainingData = values[0]
+        cov = values[1]
+        means = values[2]
 
         lda = Fisher()
         lda.findW(trainingData[0], trainingData[1])
 
-        if not results.testUsingNewData:
+        if results.testUsingTrainingData == 0:
             classificateData(lda, trainingData, trainingData, 2, "linearDiscriminantAnalysisTestA")
         else:
-            classificateData(lda, trainingData, dataSetTestATest(means), 2, "linearDiscriminantAnalysisTestA")
+            classificateData(lda, trainingData, dataSetTestATest(cov, means), 2, "linearDiscriminantAnalysisTestA")
 
     elif results.test == 'b':
-        trainingData, means = dataSetTestBTraining()
+        values = dataSetTestBTraining(dim)
+
+        trainingData = values[0]
+        cov = values[1]
+        means = values[2]
         
         lda = MCFisher()
         lda.findW(trainingData)
 
         trainingData = lda.reduceDimensionToClasses(trainingData)
-        print('training data: {0}'.format(trainingData))
         classificator = MCLogisticRegression(lambda x: [1, x[0], x[1]]) # linear
         classificator.findW(trainingData)                
-
-        if not results.testUsingNewData:
+        
+        if results.testUsingTrainingData == 0:
             classificateData(classificator, trainingData, trainingData, 3, "linearDiscriminantAnalysisTestB")
         else:
-            classificateData(classificator, trainingData, lda.reduceDimensionToClasses(dataSetTestBTest(means)), 3, "linearDiscriminantAnalysisTestB")
+            classificateData(classificator, trainingData, lda.reduceDimensionToClasses(dataSetTestBTest(cov, means)), 3, "linearDiscriminantAnalysisTestB")
     else:
         raise ValueError("Test must be a or b.")

@@ -9,15 +9,19 @@ import argparse
 parser = argparse.ArgumentParser(description="Linear Classificator of K classes with D = 2.")
 parser.add_argument("-k", action="store", dest="numberOfClasses", type=int, default=3,
                     help="Number of classses.")
-parser.add_argument("-e", action="store", dest="testUsingNewData", type=bool, default=True,
-                    help="Test de classifier using a different data set.")
+parser.add_argument("-e", action="store", dest="testUsingTrainingData", type=int, default=1,
+                    help="1: Test de classifier using a different data set. 0: Test using the training data set.")
 
 if __name__ == "__main__":
     results = parser.parse_args()
     if results.numberOfClasses > 1:
         numberOfDataPerClass = np.random.uniform(80, 100, results.numberOfClasses)
         svg = ClassificationValuesGenerator(0, 30)
-        trainingData, means = svg.getSyntheticValuesForClassification(numberOfDataPerClass, [[1, 0], [0, 1]])
+        values = svg.getSyntheticValuesForClassification(numberOfDataPerClass)
+
+        trainingData = values[0]
+        cov = values[1]
+        means = values[2]
 
         classificator = LinearClassificator()
         classificator.findW(trainingData)
@@ -25,10 +29,10 @@ if __name__ == "__main__":
         classificable = []
         classificated = [[] for i in range(0, results.numberOfClasses)]
         
-        if not results.testUsingNewData:
+        if results.testUsingTrainingData == 0:
             testData = trainingData
         else:
-            testData, means = svg.getSyntheticValuesForClassificationWithMeans([50] * results.numberOfClasses, [[1, 0], [0, 1]], means)
+            testData = svg.getSyntheticValuesForClassificationWithMeans([50] * results.numberOfClasses, cov, means)
 
         for i in xrange(results.numberOfClasses):
             for point in testData[i]:

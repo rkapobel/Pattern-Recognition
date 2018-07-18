@@ -16,7 +16,11 @@ if __name__ == "__main__":
     if results.numberOfClasses > 1:
         numberOfDataPerClass = np.random.uniform(80, 100, results.numberOfClasses)
         svg = ClassificationValuesGenerator(0, 10)
-        trainingData, means = svg.getSyntheticValuesForClassification(numberOfDataPerClass, [[1, 0], [0, 1]])
+        values = svg.getSyntheticValuesForClassification(numberOfDataPerClass)
+ 
+        trainingData = values[0]
+        cov = values[1]
+        means = values[2]
  
         classificable = []
         for cl in trainingData:
