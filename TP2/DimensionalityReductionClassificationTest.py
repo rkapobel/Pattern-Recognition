@@ -13,7 +13,7 @@ parser.add_argument("-t", action="store", dest="test", type=str, default='a',
 parser.add_argument("-e", action="store", dest="testUsingTrainingData", type=int, default=1,
                     help="1: Test de classifier using a different data set. 0: Test using the training data set.")
 parser.add_argument("-d", action="store", dest="dimension", type=int, default=0,
-                    help="If not indicated, test A will run with D = 2 and test B will run with D = 3. Must be greater or equal than 2")
+                    help="If not indicated, test B will run with D = 3. Must be greater or equal than 3.")
 
 def dataSetTestATraining(dim):
     numberOfDataPerClass = np.random.uniform(80, 100, 2)
@@ -21,7 +21,7 @@ def dataSetTestATraining(dim):
     return svg.getSyntheticValuesForClassification(numberOfDataPerClass, dim)
 
 def dataSetTestATest(cov, means):
-    svg = ClassificationValuesGenerator(0, 10)
+    svg = ClassificationValuesGenerator(0, 20)
     return svg.getSyntheticValuesForClassificationWithMeans([50] * 2, cov, means)
     
 def dataSetTestBTraining(dim):
@@ -30,7 +30,7 @@ def dataSetTestBTraining(dim):
     return svg.getSyntheticValuesForClassification(numberOfDataPerClass, dim)
             
 def dataSetTestBTest(cov, means):
-    svg = ClassificationValuesGenerator(0, 10)
+    svg = ClassificationValuesGenerator(0, 20)
     return svg.getSyntheticValuesForClassificationWithMeans([50] * 3, cov, means)
     
 def classificateData(classificator, trainingData, testData, numberOfClasses, fileName):
@@ -47,15 +47,8 @@ def classificateData(classificator, trainingData, testData, numberOfClasses, fil
 if __name__ == "__main__":
     results = parser.parse_args()
   
-    dim = results.dimension
-    if dim == 0:
-        if results.test == 'a':
-            dim = 2
-        else:
-            dim = 3
-
     if results.test == 'a':
-        values = dataSetTestATraining(dim)
+        values = dataSetTestATraining(2)
         
         trainingData = values[0]
         cov = values[1]
@@ -70,6 +63,10 @@ if __name__ == "__main__":
             classificateData(lda, trainingData, dataSetTestATest(cov, means), 2, "linearDiscriminantAnalysisTestA")
 
     elif results.test == 'b':
+        dim = 3
+        if results.dimension > 3:
+            dim = results.dimension
+
         values = dataSetTestBTraining(dim)
 
         trainingData = values[0]

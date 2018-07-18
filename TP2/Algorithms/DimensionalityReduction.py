@@ -58,8 +58,8 @@ class MCFisher():
         self.eigVal, self.W = np.linalg.eig(np.dot(inv(Sw), Sb))
 
         idx = self.eigVal.argsort()[:: -1]   
-        self.eigVal = self.eigVal[idx][0: -1]
-        self.W = self.W[:, idx][0: -1]
+        self.eigVal = self.eigVal[idx][0: len(data) - 1]
+        self.W = self.W[:, idx][0: len(data) - 1]
         
         print('W: {0}'.format(self.W)) 
         print('Eigen values: {0}'.format(self.eigVal))
