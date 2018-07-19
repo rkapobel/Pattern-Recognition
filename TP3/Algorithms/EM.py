@@ -5,7 +5,7 @@ import random as rand
 from numpy.linalg import det
 from numpy.linalg import inv
 
-maxLoglikelihoodDiff = 1
+maxLoglikelihoodDiff = 0.05
 
 def chunks(toSplit, n):
     splitted = []
@@ -15,7 +15,7 @@ def chunks(toSplit, n):
 
 class EM:
     
-    maxIter = 200
+    maxIter = 100
     initialMeans = None
     means = []
     covs = []
@@ -43,17 +43,22 @@ class EM:
         
         loglikelihoodOld = 0
         loglikelihoodNew = float('inf')
-    
-        while loglikelihoodNew - loglikelihoodOld > maxLoglikelihoodDiff and  numIter <= self.maxIter:
+
+        #loglikelihoodNew - loglikelihoodOld > maxLoglikelihoodDiff and  
+        while numIter <= self.maxIter:
             #print('Loglikelihood diff {0}'.format(loglikelihoodNew - loglikelihoodOld))
             loglikelihoodOld = loglikelihoodNew
-            loglikelihoodNew = self.expectation(data, K)
-            self.likelihoods.append(loglikelihoodNew)
-            self.maximitation(data, K)
-            numIter += 1
+            try:
+                loglikelihoodNew = self.expectation(data, K)
+                self.likelihoods.append(loglikelihoodNew)
+                self.maximitation(data, K)
+                self.clusterData(data, K)
+                numIter += 1
+            except np.linalg.LinAlgError as e:
+                print(e)
+                break
 
         self.totalIter = numIter
-        self.clusterData(data, K)
 
     def expectation(self, data, K):
         loglikelihood = 0
@@ -64,8 +69,7 @@ class EM:
                 val = self.mixtures[k] * self.multivariateGaussian(x, k)
                 self.latents[n][k] = val
                 loglikelihood_n += val                
-                if k == K - 1:
-                    self.latents[n][k] /= sum(self.latents[n])
+            self.latents[n][k] /= sum(self.latents[n])
             loglikelihood += math.log(loglikelihood_n)
             n += 1
         return loglikelihood
@@ -92,9 +96,9 @@ class EM:
     def multivariateGaussian(self, x, k):
         d = det(self.covs[k])
         print('det is: {0}'.format(d))
-        squareRoot = math.sqrt((2 * math.pi * d))
+        squareRoot = math.sqrt((2 * math.pi *  abs(d)))
         print('sqrt is: {0}'.format(squareRoot))
-        c = 1 / abs(squareRoot)
+        c = 1 / squareRoot
         print('c is: {0}'.format(c))
         v = np.array(x) - np.array(self.means[k])
         return c * math.exp(-0.5 * np.dot(v, np.dot(inv(self.covs[k]), v)))

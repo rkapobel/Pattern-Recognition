@@ -37,7 +37,7 @@ class KMeans:
         
         while abs(numOfChanges - oldNumOfChanges) >= self.maxNumOfChangesAllowed and numIter <= self.maxIter:
             for i in xrange(K):
-                self.centroids[i] = sum(clusters[i]) / (len(clusters[i]) * 1.0)
+                self.centroids[i] = sum(clusters[i]) / float(len(clusters[i]))
             numIter += 1
             oldClusters = clusters
             clusters = self.clusterData(data, K)
