@@ -4,8 +4,9 @@ import math
 from SyntheticValues import ClassificationValuesGenerator
 from Algorithms.KMeans import KMeans
 from Algorithms.EM import EM
-from Plotter import plotClasses
+from Plotter import plotClasses, plotConvergence
 import argparse
+from random import shuffle
 
 parser = argparse.ArgumentParser(description="Mixture of Gaussians of K classes with D = 2.")
 parser.add_argument("-k", action="store", dest="numberOfClasses", type=int, default=2,
@@ -26,6 +27,8 @@ if __name__ == "__main__":
         for cl in trainingData:
             classificable.extend(cl)
 
+        shuffle(classificable)
+
         classificator1 = EM()
         classificator1.expectationMaximization(classificable, results.numberOfClasses, means)
 
@@ -35,7 +38,9 @@ if __name__ == "__main__":
         #print('Cluster EM: {0}'.format(classificator1.clusters))
         #print('Cluster K-Means: {0}'.format(classificator2.clusters))
 
-        plotClasses(trainingData, classificator1.clusters, "classification EM")
-        plotClasses(trainingData, classificator2.clusters, "classification K-Means")
+        plotClasses(trainingData, classificator1.clusters, "classificationEM")
+        plotConvergence(classificator1.getEpochs(), classificator1.likelihoods, "classificationEMLikelihoods", "Likelihood")
+        plotClasses(trainingData, classificator2.clusters, "classificationK-Means")
+        plotConvergence(classificator2.getEpochs(), classificator2.objetives, "classificationK-MeansObjetives", "Objetive")
     else:
         raise ValueError("Number of classes must be greater than 1")

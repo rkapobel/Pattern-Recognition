@@ -7,39 +7,52 @@ from numpy.linalg import inv
 
 maxLoglikelihoodDiff = 1
 
+def chunks(toSplit, n):
+    splitted = []
+    for i in range(0, len(toSplit), n):
+        splitted.append(toSplit[i:i + n])
+    return splitted
+
 class EM:
     
+    maxIter = 200
     initialMeans = None
     means = []
     covs = []
     mixtures = []
+    likelihoods = []
     latents = None
     clusters = None
     totalIter = 0
 
-    def expectationMaximization(self, data, K, initialMeans):
-        if initialMeans != None:
-            self.means = initialMeans
-        else:
-            for _ in xrange(K):
-                self.means.append(rand.choice(data))
-    
-        [self.covs.append(np.identity(len(data[0]))) for _ in xrange(K)]
-        self.mixtures = np.ones((K,))
+    def getEpochs(self):
+        return list(range(self.totalIter))
+
+    def expectationMaximization(self, data, K, maxIter = 100):
+        sampleClusters = chunks(data, len(data) / K)
+        for cluster in sampleClusters:
+            cluster = np.array(cluster)
+            self.means.append(sum(cluster) / float(len(cluster)))
+            self.covs.append(np.cov(cluster.T))
+            self.mixtures.append(cluster.shape[0] / float(len(data)))
+        self.mixtures = np.array(self.mixtures)
         self.latents = np.zeros((len(data), K))
 
-        maxIter = 100
+        self.maxIter = maxIter
         numIter = 0
         
         loglikelihoodOld = 0
         loglikelihoodNew = float('inf')
-        while loglikelihoodNew - loglikelihoodOld > maxLoglikelihoodDiff and numIter <= maxIter:
+    
+        while loglikelihoodNew - loglikelihoodOld > maxLoglikelihoodDiff and  numIter <= self.maxIter:
             #print('Loglikelihood diff {0}'.format(loglikelihoodNew - loglikelihoodOld))
             loglikelihoodOld = loglikelihoodNew
             loglikelihoodNew = self.expectation(data, K)
+            self.likelihoods.append(loglikelihoodNew)
             self.maximitation(data, K)
             numIter += 1
 
+        self.totalIter = numIter
         self.clusterData(data, K)
 
     def expectation(self, data, K):
@@ -77,7 +90,12 @@ class EM:
             self.mixtures[k] = Nk / float(len(data))
         
     def multivariateGaussian(self, x, k):
-        c = 1 / math.sqrt((2 * math.pi * det(self.covs[k])))
+        d = det(self.covs[k])
+        print('det is: {0}'.format(d))
+        squareRoot = math.sqrt((2 * math.pi * d))
+        print('sqrt is: {0}'.format(squareRoot))
+        c = 1 / abs(squareRoot)
+        print('c is: {0}'.format(c))
         v = np.array(x) - np.array(self.means[k])
         return c * math.exp(-0.5 * np.dot(v, np.dot(inv(self.covs[k]), v)))
 

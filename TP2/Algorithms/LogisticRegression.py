@@ -36,6 +36,9 @@ class LogisticRegression:
     def costFunction(self, h, labels, m):
         return (np.dot(-1 * labels, np.log(h)) - np.dot(1 - labels, np.log(1 - h))) / float(m)
 
+    def getEpochs(self):
+        return list(range(self.maxIter))
+
 class NRLogisticRegression(LogisticRegression):
     w = None
 
@@ -54,8 +57,7 @@ class NRLogisticRegression(LogisticRegression):
         w_old = np.zeros((m,)) # Did not like to start with random
         self.w = np.array([float('inf')] * m)
         phi_X_t = phi_X.T #MxN
-        numIter = 0
-        self.epochs = list(range(self.maxIter))
+        numIter = 0 
         allCosts = []
         while numIter <= self.maxIter:
             y = self.sigmoid(np.dot(phi_X, w_old)) #Nx1
@@ -103,7 +105,6 @@ class MCLogisticRegression(LogisticRegression):
         T = np.array(T) #NxK
         n, m = phi_X.shape
         W_old = np.zeros((self.K, m) if self.K > 2 else (m,)) #KxM
-        self.epochs = list(range(self.maxIter))
         allCosts = []
         for k in xrange(self.K if self.K > 2 else 1):
             numIter = 0

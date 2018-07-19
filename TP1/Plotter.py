@@ -84,6 +84,15 @@ def plotCosts(epochs, costsPerClass, imageName):
     plot.axes().set_ylabel("$Cost$")
     plot.savefig(os.path.join(imageDirectory, imageName + ".pdf"))
 
+def plotConvergence(epochs, data, imageName, yTitle):
+    plot.clf()
+    updatePlotParams()
+    plot.plot(epochs, data, 'ob', label=yTitle)
+    plot.legend(loc="upper right", shadow=True)
+    plot.axes().set_xlabel("$Epochs$")
+    plot.axes().set_ylabel("${0}$".format(yTitle))
+    plot.savefig(os.path.join(imageDirectory, imageName + ".pdf"))
+
 def updatePlotParams():
     params = {
         'legend.fontsize': 7,

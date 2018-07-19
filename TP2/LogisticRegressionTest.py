@@ -34,7 +34,7 @@ def classificateData(classificator, trainingData, testData, numberOfClasses, fil
             print("point {0} in class {1} must be {2}".format(point, ci, i))
     
     plotClasses(trainingData, classificated, fileName)
-    plotCosts(classificator.epochs, classificator.costs, fileName + 'costFunction')
+    plotCosts(classificator.getEpochs(), classificator.costs, fileName + 'costFunction')
 
 if __name__ == "__main__":
     results = parser.parse_args()
