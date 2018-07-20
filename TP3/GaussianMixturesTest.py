@@ -11,6 +11,12 @@ from random import shuffle
 parser = argparse.ArgumentParser(description="Mixture of Gaussians of K classes with D = 2.")
 parser.add_argument("-k", action="store", dest="numberOfClasses", type=int, default=2,
                     help="Number of classses.")
+parser.add_argument("-t", action="store", dest="testsToRun", type=int, default=0,
+                    help="0: run EM and K-Means. 1: Will run only EM. 2: Will run only K-Means.")
+parser.add_argument("-em", action="store", dest="numberOfIterationsOfEM", type=int, default=2000,
+                    help="Number of iterations of EM.")
+parser.add_argument("-km", action="store", dest="numberOfIterationsOfKMeans", type=int, default=200,
+                    help="Number of iterations of K-Means.")
 
 if __name__ == "__main__":
     results = parser.parse_args()
@@ -29,18 +35,14 @@ if __name__ == "__main__":
 
         shuffle(classificable)
 
-        classificator1 = EM()
-        classificator1.expectationMaximization(classificable, results.numberOfClasses, means)
-
-        classificator2 = KMeans()
-        classificator2.calculateCentroids(classificable, results.numberOfClasses)
-        
-        #print('Cluster EM: {0}'.format(classificator1.clusters))
-        #print('Cluster K-Means: {0}'.format(classificator2.clusters))
-
-        plotClasses(trainingData, classificator1.clusters, "classificationEM")
-        plotConvergence(classificator1.getEpochs(), classificator1.likelihoods, "classificationEMLikelihoods", "Likelihood")
-        plotClasses(trainingData, classificator2.clusters, "classificationK-Means")
-        plotConvergence(classificator2.getEpochs(), classificator2.objetives, "classificationK-MeansObjetives", "Objetive")
+        if results.testsToRun == 0 or results.testsToRun == 1:
+            classificator1 = EM()
+            classificator1.expectationMaximization(classificable, results.numberOfClasses, results.numberOfIterationsOfEM)
+            plotClasses(trainingData, classificator1.clusters, "classificationEM")
+         
+        if results.testsToRun == 0 or results.testsToRun == 2:
+            classificator2 = KMeans()
+            classificator2.calculateCentroids(classificable, results.numberOfClasses, results.numberOfIterationsOfKMeans)
+            plotClasses(trainingData, classificator2.clusters, "classificationK-Means")
     else:
         raise ValueError("Number of classes must be greater than 1")

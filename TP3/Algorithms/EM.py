@@ -5,18 +5,8 @@ import random as rand
 from numpy.linalg import det
 from numpy.linalg import inv
 
-maxLoglikelihoodDiff = 0.05
-
-def chunks(toSplit, n):
-    splitted = []
-    for i in range(0, len(toSplit), n):
-        splitted.append(toSplit[i:i + n])
-    return splitted
-
 class EM:
-    
-    maxIter = 100
-    initialMeans = None
+   
     means = []
     covs = []
     mixtures = []
@@ -28,35 +18,35 @@ class EM:
     def getEpochs(self):
         return list(range(self.totalIter))
 
-    def expectationMaximization(self, data, K, maxIter = 100):
-        sampleClusters = chunks(data, len(data) / K)
-        for cluster in sampleClusters:
-            cluster = np.array(cluster)
-            self.means.append(sum(cluster) / float(len(cluster)))
-            self.covs.append(np.cov(cluster.T))
-            self.mixtures.append(cluster.shape[0] / float(len(data)))
-        self.mixtures = np.array(self.mixtures)
+    def expectationMaximization(self, data, K, maxIter = 2000):
+        for _ in xrange(K):
+            self.means.append(rand.choice(data))
+        
+        [self.covs.append(np.identity(len(data[0]))) for _ in xrange(K)]
+        self.mixtures = np.ones((K,)) * (1 / float(K))
         self.latents = np.zeros((len(data), K))
-
+        
         self.maxIter = maxIter
         numIter = 0
-        
-        loglikelihoodOld = 0
-        loglikelihoodNew = float('inf')
-
-        #loglikelihoodNew - loglikelihoodOld > maxLoglikelihoodDiff and  
+       
         while numIter <= self.maxIter:
-            #print('Loglikelihood diff {0}'.format(loglikelihoodNew - loglikelihoodOld))
-            loglikelihoodOld = loglikelihoodNew
-            try:
-                loglikelihoodNew = self.expectation(data, K)
-                self.likelihoods.append(loglikelihoodNew)
-                self.maximitation(data, K)
-                self.clusterData(data, K)
-                numIter += 1
-            except np.linalg.LinAlgError as e:
-                print(e)
+            self.clusterData(data, K)
+            self.likelihoods.append(self.expectation(data, K))
+            self.maximitation(data, K)
+            covsOK = True
+            for i in xrange(K):
+                try:
+                    inv(self.covs[i])
+                except np.linalg.LinAlgError as e:
+                    print(e)
+                    covsOK = False
+                    break
+                if det(self.covs[i]) < 0:
+                    covsOK = False
+                    break
+            if not covsOK:
                 break
+            numIter += 1
 
         self.totalIter = numIter
 
@@ -66,10 +56,10 @@ class EM:
         for x in data:
             loglikelihood_n = 0
             for k in xrange(K):
-                val = self.mixtures[k] * self.multivariateGaussian(x, k)
+                val = self.mixtures[k] * self.multivariateGaussian(x, k, K)
                 self.latents[n][k] = val
-                loglikelihood_n += val                
-            self.latents[n][k] /= sum(self.latents[n])
+                loglikelihood_n += val
+            self.latents[n] /= float(sum(self.latents[n]))
             loglikelihood += math.log(loglikelihood_n)
             n += 1
         return loglikelihood
@@ -93,19 +83,14 @@ class EM:
             self.covs[k] *= 1 / float(Nk)
             self.mixtures[k] = Nk / float(len(data))
         
-    def multivariateGaussian(self, x, k):
-        d = det(self.covs[k])
-        print('det is: {0}'.format(d))
-        squareRoot = math.sqrt((2 * math.pi *  abs(d)))
-        print('sqrt is: {0}'.format(squareRoot))
-        c = 1 / squareRoot
-        print('c is: {0}'.format(c))
+    def multivariateGaussian(self, x, k, K):
+        c = 1 / math.sqrt(((2 * math.pi)**K) *  det(self.covs[k]))
         v = np.array(x) - np.array(self.means[k])
         return c * math.exp(-0.5 * np.dot(v, np.dot(inv(self.covs[k]), v)))
 
     def clusterData(self, data, K):
         self.clusters = [[] for _ in xrange(K)]
         for x in data:
-            prob = [self.multivariateGaussian(x, k) for k in xrange(K)]
+            prob = [self.multivariateGaussian(x, k, K) for k in xrange(K)]
             i = np.argmax(prob)
             self.clusters[i].append(x)
