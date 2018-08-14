@@ -4,12 +4,12 @@ from numpy.linalg import inv
 import math
 
 class Classificator:
-    W = None
 
     def __init__(self):
-        pass
+       self.W = None
 
 class LinearClassificator(Classificator):
+
     def __init__(self):
         Classificator.__init__(self)
 

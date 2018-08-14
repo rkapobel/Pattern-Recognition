@@ -4,11 +4,13 @@ from numpy.linalg import inv
 import math
 
 class Fisher():
-    Sw = np.zeros((2, 2))
-    m1 = np.zeros(2)
-    m2 = np.zeros(2)
-    m = np.zeros(2)
-    w = None
+
+    def __init__(self):
+        self.Sw = np.zeros((2, 2))
+        self.m1 = np.zeros(2)
+        self.m2 = np.zeros(2)
+        self.m = np.zeros(2)
+        self.w = None
 
     def findW(self, data1, data2):
         data1 = np.array(data1)
@@ -44,9 +46,11 @@ class Fisher():
         #return 0 if np.dot(self.w, x - self.m) > 0 else 1
 
 class MCFisher():
-    W = []
-    eigVal = []
-    means = []
+    
+    def __init__(self):
+        self.W = []
+        self.eigVal = []
+        self.means = []
 
     def findW(self, data):
         data = np.array(data)

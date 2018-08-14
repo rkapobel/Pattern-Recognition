@@ -7,13 +7,14 @@ from numpy.linalg import inv
 
 class EM:
    
-    means = []
-    covs = []
-    mixtures = []
-    likelihoods = []
-    latents = None
-    clusters = None
-    totalIter = 0
+    def __init__(self):
+        self.means = []
+        self.covs = []
+        self.mixtures = []
+        self.likelihoods = []
+        self.latents = None
+        self.clusters = None
+        self.totalIter = 0
 
     def getEpochs(self):
         return list(range(self.totalIter))

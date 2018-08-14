@@ -8,12 +8,10 @@ CIRCULAR = lambda x: [1, x[0]**2, x[1]**2]
 ELLIPTIC = lambda x: [1, x[0], x[1], x[0]**2, x[0]*x[1], x[1]**2]
 
 class LogisticRegression:
-    phi = None
-    maxIter = 200
-    costs = []
-    epochs = []
 
     def __init__(self, phi, maxIter = 200):
+        self.costs = []
+        self.epochs = []
         self.phi = phi
         self.maxIter = maxIter
     
@@ -40,7 +38,9 @@ class LogisticRegression:
         return list(range(self.maxIter))
 
 class NRLogisticRegression(LogisticRegression):
-    w = None
+    
+    def __init__(self):
+        self.w = None
 
     def findW(self, classes):
         phi_X = []
@@ -80,12 +80,10 @@ class NRLogisticRegression(LogisticRegression):
         return 0 if self.sigmoid([np.dot(self.w, self.phi(x))]) >= 0.05 else 1
 
 class MCLogisticRegression(LogisticRegression):
-    W = None
-    regularize = False
-    alpha = 1
 
     def __init__(self, phi, maxIter = 200, regularize = False, alpha = 0.005):
         LogisticRegression.__init__(self, phi, maxIter)
+        self.W = None
         self.regularize = regularize
         self.alpha = alpha
 

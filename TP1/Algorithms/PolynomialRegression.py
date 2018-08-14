@@ -4,11 +4,9 @@ from numpy.linalg import inv
 import math
 
 class PolynomialRegression:
-    reg = 0
-    M = 0
-    w = None
-
+   
     def __init__(self, reg, M):
+        self.w = None
         self.reg = reg
         self.M = M
 

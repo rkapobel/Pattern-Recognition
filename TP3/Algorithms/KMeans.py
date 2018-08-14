@@ -6,11 +6,12 @@ from numpy.linalg import norm
 
 class KMeans:
 
-    centroids = []
-    clusters = None
-    totalIter = 0
-    objetives = []
-
+    def __init__(self):
+        self.centroids = []
+        self.clusters = None
+        self.totalIter = 0
+        self.objetives = []
+    
     def getEpochs(self):
         return list(range(self.totalIter))
 
