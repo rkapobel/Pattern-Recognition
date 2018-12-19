@@ -20,35 +20,49 @@ class SVM:
 		self.W = None    
 		self.b = None
 		self.alphas = None
-		
+		self.X = None
+		self.Y = None
+
 	def maximizeDualProblem(X, Y):
-		Y = np.array(Y)
-		X = np.array(X) #TODO: Apply the kernel
-		D = X.shape
+		self.Y = np.array(Y)
+		self.X = np.array(X) #TODO: Apply the kernel first to X
+		D = self.X.shape
 		self.alphas = self.getRandomAlphas(D[0])
-		P = np.array([x*self.alphas*Y for x in X.T]).T
+		P = np.array([x*self.alphas*self.Y for x in self.X.T]).T
 		A = np.dot(P, P.T)
 		Max = sum(self.alphas) - 0.5*sum(sum(A))
 		MaxAux = Max
 		it = 0
-		R1 = self.r1(self.alphas, Y) #TODO: Figure out the correct way to find the alphas
+		R1 = self.alphaValidation(self.alphas) #TODO: Figure out the correct way to find the alphas
 		while (not R1) and it < self.maxIter:
 			alphasAux = self.getRandomAlphas(D[0])
-			P = np.array([x*alphasAux*Y for x in X.T]).T
+			P = np.array([x*alphasAux*self.Y for x in self.X.T]).T
 			A = np.dot(P, P.T)
 			MaxAux = sum(alphasAux) - 0.5*sum(sum(A))
-			R1 = self.r1(self.alphas, Y)
+			R1 = self.alphaValidation(self.alphas)
 			if MaxAux > Max and R1:
 				Max = MaxAux
 				self.alphas = alphasAux
 			it += 1
-		self.W = sum(np.dot(X.T, self.alphas*Y))
-		#TODO: Find self.b
+		self.W = sum(np.dot(self.X.T, self.alphas*self.Y))
+		self.findB()
 
 		def getRandomAlphas(l):
 			return numpy.random.uniform(low=0, high=self.C, size=(l,1))
 
-		def r1(alphas, Y):
-			np.dot(alphas, Y) == 0
+		def alphaValidation(alphas):
+			np.dot(alphas, self.Y) == 0
+	
+		def findB():
+			for i in range(self.X.shape[0]):
+				xi = self.X[i]
+				yi = self.Y[i]
+				prod = np.dot(self.W, xi)
+				b = yi - prod
+				if yi*(prod + b) == 1:
+					self.b = b
+					return
+			#TODO: throw an error?
 
-		#TODO: A function to classificate a point is needed
+		def classificate(x):
+			return np.sign(np.dot(np.dot(X, x), self.alphas*self.Y) + self.b) #TODO: Apply the kernel to x
