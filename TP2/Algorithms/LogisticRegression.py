@@ -11,7 +11,6 @@ class LogisticRegression:
 
     def __init__(self, phi, maxIter = 200):
         self.costs = []
-        self.epochs = []
         self.phi = phi
         self.maxIter = maxIter
     
@@ -25,7 +24,7 @@ class LogisticRegression:
                 sigmoids.append(1 / (1 + np.exp(-a)))
         return np.array(sigmoids)
 
-    def calculateCostFunction(self, w, phi_X, labels, numIter):
+    def calculateCostFunction(self, w, phi_X, labels):
         m = phi_X.shape[0]
         h = self.sigmoid(np.dot(phi_X, w))
         labels = np.array(labels)
@@ -57,7 +56,8 @@ class NRLogisticRegression(LogisticRegression):
         w_old = np.zeros((m,)) # Did not like to start with random
         self.w = np.array([float('inf')] * m)
         phi_X_t = phi_X.T #MxN
-        numIter = 0 
+        numIter = 0
+        self.costs = []
         allCosts = []
         while numIter <= self.maxIter:
             y = self.sigmoid(np.dot(phi_X, w_old)) #Nx1
@@ -67,7 +67,7 @@ class NRLogisticRegression(LogisticRegression):
                 M = inv(np.dot(L, phi_X)) #MxNxNxM
                 z = np.dot(phi_X, w_old) - np.dot(inv(R), y - t)
                 w_old = np.dot(M, np.dot(L, z))
-                cost = self.calculateCostFunction(w_old, phi_X, t, numIter)
+                cost = self.calculateCostFunction(w_old, phi_X, t)
                 allCosts.append(cost)
             except np.linalg.LinAlgError as e:
                 print(e)
@@ -103,6 +103,7 @@ class MCLogisticRegression(LogisticRegression):
         T = np.array(T) #NxK
         n, m = phi_X.shape
         W_old = np.zeros((self.K, m) if self.K > 2 else (m,)) #KxM
+        self.costs = []
         allCosts = []
         for k in xrange(self.K if self.K > 2 else 1):
             numIter = 0
@@ -127,7 +128,7 @@ class MCLogisticRegression(LogisticRegression):
                 else: 
                     W_old = wk
 
-                cost = self.calculateCostFunction(wk, phi_X, T[:, k if self.K > 2 else 0], numIter)
+                cost = self.calculateCostFunction(wk, phi_X, T[:, k if self.K > 2 else 0])
                 allCosts.append(cost)
 
                 numIter += 1
