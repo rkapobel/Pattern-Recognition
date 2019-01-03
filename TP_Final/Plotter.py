@@ -69,6 +69,41 @@ def plotClasses(classes, classificated, imageName):
     plot.legend(loc="upper right", shadow=True)
     plot.savefig(os.path.join(imageDirectory, imageName + ".pdf"))
 
+def plotClassesWithDecisionBoundary(classes, classificated, W, b, imageName):
+    plot.clf()
+    updatePlotParams()
+    
+    for i in xrange(len(classes)):
+        ci = classes[i]
+        if len(ci) > 0:
+            mark = colors[(i / len(markers)) % len(colors)] + markers[i % len(markers)]
+            cx1, cx2 = zip(*ci)
+            plot.plot(cx1, cx2, mark, label="Training class {0}".format(i))
+    
+    for i in xrange(len(classificated)):
+        ci = classificated[i]
+        if len(ci) > 0:
+            mark = colors[((i / len(markers)) + 1) % len(colors)] + markers[i % len(markers)]
+            cx1, cx2 = zip(*ci)
+            plot.plot(cx1, cx2, mark, label="Test class {0}".format(i))
+    
+    # plot the decision function
+    ax = plot.gca()
+    xlim = ax.get_xlim()
+    ylim = ax.get_ylim()
+
+    # Create the hyperplane
+    a = -W[0] / W[1]
+    xx = np.linspace(xlim[0], xlim[1])
+    yy = (a * xx) - (b / W[1])
+
+    # Plot the hyperplane
+    plot.plot(xx, yy)
+    plot.axis("off")
+
+    plot.legend(loc="upper right", shadow=True)
+    plot.savefig(os.path.join(imageDirectory, imageName + ".pdf"))
+
 def plotCosts(epochs, costsPerClass, imageName):
     plot.clf()
     updatePlotParams()
