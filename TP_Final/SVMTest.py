@@ -30,7 +30,6 @@ def dataSetTestATest(cov, means):
 
 def classificateData(classificator, trainingData, testData, fileName):
     classificated = [[] for i in range(0, 2)]
-        
     for i in xrange(2):
         for point in testData[i]:
             ci = classificator.classificate(point)
@@ -63,22 +62,16 @@ if __name__ == "__main__":
     trainingData = values[0]
     cov = values[1]
     means = values[2]
-    
     X1 = trainingData[0]
     Y1 = np.ones((len(X1),))
-    
     X2 = trainingData[1]
     Y2 = -1*np.ones((len(X2),))
-
     X = np.concatenate((X1, X2), axis = 0)
     Y = np.append(Y1, Y2)
-
     classificator = SVM(results.threshold, results.learningRate, results.regParamC, results.maxNumIter)
     classificator.train(X, Y)
-
     print('W:', classificator.W)
     print('b:', classificator.b)
-
     if results.testUsingTrainingData == 0:
         classificateData(classificator, trainingData, trainingData, "supportVectorMachineTest")
     else:
