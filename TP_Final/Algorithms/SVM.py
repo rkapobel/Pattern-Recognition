@@ -25,21 +25,26 @@ class SVM:
 		allCosts = []
 		loss = 0
 		lossAux = np.inf
-		self.numIter = 1
+		self.numIter = 0
 		delta = np.abs(lossAux - loss)
 		while self.numIter < self.maxNumIter:
 			sumST = 0
 			loss = 0
 			data = zip(self.X, self.Y)
 			shuffle(data)
+			gamma = (self.lr / float(self.numIter + 1)) #TODO: FORMA_2
 			for (xi, yi) in data:
-				v = yi*(np.dot(self.W, xi) + self.b)
+				v = yi * (np.dot(self.W, xi) + self.b)
 				loss += max(0, 1 - v)
-				#sumST += -xi*yi if v < 1 else 0
-				self.W -= (self.lr / float(self.numIter)) * (self.W + self.C*(-xi*yi if v < 1 else 0))
-			loss *= 1/float(self.D[0]) #TODO: or self.C*loss ?
-			#self.W -= (self.lr / float(self.numIter)) * (self.W + self.C*sumST) #TODO: (1/float(self.D[0])) or self.C ?
+				sumST += -xi * yi if v < 1 else 0 #TODO: FORMA_TOTAL
+				#self.W -= gamma * self.C * (-xi * yi if v < 1 else 0) #TODO: FORMA_0
+				#self.W -= gamma * (self.W + self.C * (-xi * yi if v < 1 else 0)) #TODO: FORMA_1
+				#self.W = (((1 - gamma) * self.W) + (gamma * self.C * (xi * yi if v < 1 else 0))) #TODO: FORMA_1_bis
+			self.W -= gamma * self.C * (sumST / np.linalg.norm(sumST)) #TODO: FORMA_TOTAL_0
+			#self.W -= gamma * (self.W + self.C * (sumST / np.linalg.norm(sumST))) #TODO: FORMA_TOTAL_1
+			#self.W = ((1 - gamma) * self.W) + (gamma * self.C * (-sumST / np.linalg.norm(-sumST))) #TODO: FORMA_TOTAL_1_bis
 			self.findB()
+			loss *= 1/float(self.D[0]) #TODO: or self.C*loss ?
 			delta = np.abs(lossAux - loss)
 			allCosts.append(delta)
 			lossAux = loss
