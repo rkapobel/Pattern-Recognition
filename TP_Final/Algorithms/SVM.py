@@ -7,8 +7,7 @@ import math
 
 class SVM:
 
-	def __init__(self, thresh = 0.001, lr = 0.5, C = 0.1, maxNumIter = 10000):
-		self.thresh = thresh
+	def __init__(self, lr = 0.5, C = 0.1, maxNumIter = 10000):
 		self.lr = lr
 		self.C = C
 		self.costs = []
@@ -28,23 +27,20 @@ class SVM:
 		self.numIter = 0
 		delta = np.abs(lossAux - loss)
 		while self.numIter < self.maxNumIter:
-			sumST = 0
+			sumST = 0 # It's a vector indeed, but np allows vector + numbers and other operations
 			loss = 0
 			data = zip(self.X, self.Y)
 			shuffle(data)
-			gamma = (self.lr / float(self.numIter + 1)) #TODO: FORMA_2
+			gamma = (self.lr / float(self.numIter + 1))
 			for (xi, yi) in data:
 				v = yi * (np.dot(self.W, xi) + self.b)
 				loss += max(0, 1 - v)
-				sumST += -xi * yi if v < 1 else 0 #TODO: FORMA_TOTAL
-				#self.W -= gamma * self.C * (-xi * yi if v < 1 else 0) #TODO: FORMA_0
-				#self.W -= gamma * (self.W + self.C * (-xi * yi if v < 1 else 0)) #TODO: FORMA_1
-				#self.W = (((1 - gamma) * self.W) + (gamma * self.C * (xi * yi if v < 1 else 0))) #TODO: FORMA_1_bis
-			self.W -= gamma * self.C * (sumST / np.linalg.norm(sumST)) #TODO: FORMA_TOTAL_0
-			#self.W -= gamma * (self.W + self.C * (sumST / np.linalg.norm(sumST))) #TODO: FORMA_TOTAL_1
-			#self.W = ((1 - gamma) * self.W) + (gamma * self.C * (-sumST / np.linalg.norm(-sumST))) #TODO: FORMA_TOTAL_1_bis
+				#sumST += -xi * yi if (yi * np.dot(self.W, xi)) < 1 else 0
+				grad = -xi * yi if (yi * np.dot(self.W, xi)) < 1 else 0
+				self.W -= gamma * (self.W + self.C * grad)
+			#self.W -= gamma * self.C * (sumST / np.linalg.norm(sumST))
 			self.findB()
-			loss *= 1/float(self.D[0]) #TODO: or self.C*loss ?
+			loss *= self.C
 			delta = np.abs(lossAux - loss)
 			allCosts.append(delta)
 			lossAux = loss

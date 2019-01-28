@@ -8,13 +8,11 @@ import argparse
 from random import shuffle
 
 parser = argparse.ArgumentParser(description="Support Vector Machines for classification of 2 classes with vector space R^2.")
-parser.add_argument("-t", action="store", dest="threshold", type=float, default=0.001,
-                    help="Threshold for the loss function of the gradient descent.")
 parser.add_argument("-lr", action="store", dest="learningRate", type=float, default=0.5,
                     help="Learning rate of the learning rate of the gradient descent.")
 parser.add_argument("-c", action="store", dest="regParamC", type=float, default=0.1,
                     help="Regularization parameter of the slack variables: too small == hard margin | too large == soft margin.")
-parser.add_argument("-i", action="store", dest="maxNumIter", type=int, default=10000,
+parser.add_argument("-i", action="store", dest="maxNumIter", type=int, default=20000,
                     help="Max number of iterations for the loss function of the gradient descent.")
 parser.add_argument("-e", action="store", dest="testUsingTrainingData", type=int, default=1,
                     help="1: Test de classifier using a different data set. 0: Test using the training data set.")
@@ -68,7 +66,7 @@ if __name__ == "__main__":
     Y2 = -1*np.ones((len(X2),))
     X = np.concatenate((X1, X2), axis = 0)
     Y = np.append(Y1, Y2)
-    classificator = SVM(results.threshold, results.learningRate, results.regParamC, results.maxNumIter)
+    classificator = SVM(results.learningRate, results.regParamC, results.maxNumIter)
     classificator.train(X, Y)
     print('W:', classificator.W)
     print('b:', classificator.b)
