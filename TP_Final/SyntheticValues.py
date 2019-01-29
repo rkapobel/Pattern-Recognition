@@ -40,8 +40,8 @@ class RegressionValuesGenerator(object):
 class ClassificationValuesGenerator(object):
     a = 0
     b = 0
-
-    def __init__(self, a, b):        
+    
+    def __init__(self, a = 0, b = 30):        
         self.a = a
         self.b = b
 
@@ -54,9 +54,7 @@ class ClassificationValuesGenerator(object):
 
     def getSyntheticValuesForClassificationWithMeans(self, numberOfPointsPerClass, cov, means):
         data = []
-
         K = len(numberOfPointsPerClass)
-
         for i in xrange(K):
             X = np.random.multivariate_normal(means[i], cov, int(numberOfPointsPerClass[i])).T
             data.append(map(list, zip(*X)))
@@ -67,10 +65,8 @@ def getEllipticValues(circle_r, numValues):
     # center of the circle (x, y)
     circle_x = 5
     circle_y = 7
-
     values = []
     mean = [circle_x, circle_y]
-
     for _ in xrange(int(numValues)):
         # random angle
         alpha = 2 * math.pi * np.random.random()
@@ -80,13 +76,10 @@ def getEllipticValues(circle_r, numValues):
         x = r * math.cos(alpha) + circle_x
         y = r * math.sin(alpha) + circle_y
         values.append([x[0], y[0]])
-
     return values, mean
 
 def getEllipticValuesForClassification():
     numberOfDataPerClass = np.random.uniform(80, 100, 2)
-
     data1, mean1 = getEllipticValues(10, numberOfDataPerClass[0])
     data2, mean2 = getEllipticValues(90, numberOfDataPerClass[1])
-
     return [data1, data2], [mean1, mean2]

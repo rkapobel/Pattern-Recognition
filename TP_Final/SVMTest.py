@@ -23,8 +23,15 @@ def dataSetTestATraining():
     return svg.getSyntheticValuesForClassification(numberOfDataPerClass)
     
 def dataSetTestATest(cov, means):
-    svg = ClassificationValuesGenerator(0, 30)
+    svg = ClassificationValuesGenerator(0, 1)
     return svg.getSyntheticValuesForClassificationWithMeans([50] * 2, cov, means)
+
+def dataSetTestATrainingWithFixedDistribution():
+    numberOfDataPerClass = np.random.uniform(80, 100, 2)
+    svg = ClassificationValuesGenerator()
+    cov = np.array([[1, 0], [0, 1]])
+    means = [[0, 0], [1.5, 0.5]]
+    return [svg.getSyntheticValuesForClassificationWithMeans(numberOfDataPerClass, cov, means), cov, means]
 
 def classificateData(classificator, trainingData, testData, fileName):
     classificated = [[] for i in range(0, 2)]
@@ -56,10 +63,12 @@ if __name__ == "__main__":
         print('point {0} in class {1} must be {2}'.format(p[0], c, p[1]))
     '''    
     results = parser.parse_args()
-    values = dataSetTestATraining()
+    values = dataSetTestATrainingWithFixedDistribution()#dataSetTestATraining()
     trainingData = values[0]
     cov = values[1]
+    print(cov, 'cov')
     means = values[2]
+    print(means, 'means')
     X1 = trainingData[0]
     Y1 = np.ones((len(X1),))
     X2 = trainingData[1]
