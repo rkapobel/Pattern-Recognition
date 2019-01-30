@@ -79,8 +79,9 @@ def plotClassesWithDecisionBoundary(classes, classificated, W, b, imageName):
     plotTestClass(classificated)
     # plot the decision function
     ax = plot.gca()
-    xlim = ax.get_xlim()
-    ylim = ax.get_ylim()
+    minxy = min(ax.get_xlim(), ax.get_ylim())
+    xlim = minxy
+    ylim = minxy
     # Create the hyperplane
     a = -W[0] / W[1]
     xx = np.linspace(xlim[0], xlim[1])
