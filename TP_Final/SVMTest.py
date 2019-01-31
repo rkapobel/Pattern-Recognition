@@ -30,7 +30,7 @@ def dataSetTestATrainingWithFixedDistribution():
     numberOfDataPerClass = np.random.uniform(80, 100, 2)
     svg = ClassificationValuesGenerator()
     cov = np.array([[1, 0], [0, 1]])
-    means = [[0, 0], [0, 2]]
+    means = [[0, 0], [2, 0]]
     return [svg.getSyntheticValuesForClassificationWithMeans(numberOfDataPerClass, cov, means), cov, means]
 
 def classificateData(classificator, trainingData, testData, fileName):

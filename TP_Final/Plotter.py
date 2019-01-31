@@ -78,13 +78,26 @@ def plotClassesWithDecisionBoundary(classes, classificated, W, b, imageName):
     plotTrainingClass(classes)
     plotTestClass(classificated)
     # plot the decision function
+    unzipedC0 = list(zip(*classes[0]))
+    unzipedC1 = list(zip(*classes[1]))
+    cx = unzipedC0[0] + unzipedC1[0]
+    cy = unzipedC0[1] + unzipedC1[1] 
+    minx = min(cx)
+    maxx = max(cx)
+    miny = min(cy)
+    maxy = max(cy)
+    print(minx, 'minx')
+    print(maxx, 'maxx')
+
     ax = plot.gca()
-    minxy = min(ax.get_xlim(), ax.get_ylim())
-    xlim = minxy
-    ylim = minxy
+    xlim = ax.get_xlim()
+    ylim = ax.get_ylim()
+    lim = min(min(abs(xlim[0]), abs(xlim[1])), min(abs(ylim[0]), abs(ylim[1])))
+    print(lim, 'lim')
+
     # Create the hyperplane
     a = -W[0] / W[1]
-    xx = np.linspace(xlim[0], xlim[1])
+    xx = np.linspace(minx, maxx)
     yy = (a * xx) - (b / W[1])
     # Plot the hyperplane
     plot.plot(xx, yy)
