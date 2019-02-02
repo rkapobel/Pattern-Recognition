@@ -88,20 +88,21 @@ def plotClassesWithDecisionBoundary(classes, classificated, W, b, imageName):
     maxy = max(cy)
     print(minx, 'minx')
     print(maxx, 'maxx')
-
+    print(miny, 'miny')
+    print(maxy, 'maxy')
     ax = plot.gca()
     xlim = ax.get_xlim()
     ylim = ax.get_ylim()
-    lim = min(min(abs(xlim[0]), abs(xlim[1])), min(abs(ylim[0]), abs(ylim[1])))
-    print(lim, 'lim')
-
     # Create the hyperplane
     a = -W[0] / W[1]
-    xx = np.linspace(minx, maxx)
+    xx = np.linspace(xlim[0], xlim[1])
     yy = (a * xx) - (b / W[1])
     # Plot the hyperplane
     plot.plot(xx, yy)
     plot.axis("off")
+    #plot.xlim(minx, maxx)
+    #plot.xlim(miny, maxy)
+    plot.axis([minx - 1,maxx + 1,miny - 1,maxy + 1])
     plot.legend(loc="upper right", shadow=True)
     plot.savefig(os.path.join(imageDirectory, imageName + ".pdf"))
 

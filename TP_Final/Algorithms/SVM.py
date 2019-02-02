@@ -35,8 +35,8 @@ class SVM:
 			for (xi, yi) in data:
 				v = yi * (np.dot(self.W, xi) + self.b)
 				loss += max(0, 1 - v)
-				#sumST += -xi * yi if (yi * np.dot(self.W, xi)) < 1 else 0
-				grad = -xi * yi if (yi * np.dot(self.W, xi)) < 1 else 0
+				#sumST += -xi * yi if (yi * (np.dot(self.W, xi) + self.b)) < 1 else 0
+				grad = -xi * yi if (yi * (np.dot(self.W, xi) + self.b)) < 1 else 0
 				self.W -= gamma * (self.W + self.C * grad)
 			#self.W -= gamma * self.C * (sumST / np.linalg.norm(sumST))
 			self.findB()
