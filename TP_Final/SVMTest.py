@@ -10,8 +10,8 @@ from random import shuffle
 parser = argparse.ArgumentParser(description="Support Vector Machines for classification of 2 classes with vector space R^2.")
 parser.add_argument("-lr", action="store", dest="learningRate", type=float, default=0.5,
                     help="Learning rate of the learning rate of the gradient descent.")
-parser.add_argument("-c", action="store", dest="regParamC", type=float, default=0.1,
-                    help="Regularization parameter of the slack variables: too small == hard margin | too large == soft margin.")
+parser.add_argument("-c_list", action="store", dest="regListParamC", nargs="+", default=0.1, type=float,
+                    help="A list of regularization parameter for the slack variables: too small == hard margin | too large == soft margin.") 
 parser.add_argument("-i", action="store", dest="maxNumIter", type=int, default=20000,
                     help="Max number of iterations for the loss function of the gradient descent.")
 parser.add_argument("-e", action="store", dest="testUsingTrainingData", type=int, default=1,
@@ -30,7 +30,7 @@ def dataSetTestATrainingWithFixedDistribution():
     numberOfDataPerClass = np.random.uniform(80, 100, 2)
     svg = ClassificationValuesGenerator()
     cov = np.array([[1, 0], [0, 1]])
-    means = [[0, 0], [0, 20]]
+    means = [[0, 0], [0, 5]]
     return [svg.getSyntheticValuesForClassificationWithMeans(numberOfDataPerClass, cov, means), cov, means]
 
 def classificateData(classificator, trainingData, testData, fileName):
@@ -50,20 +50,9 @@ def classificateData(classificator, trainingData, testData, fileName):
     #plotCosts(classificator.getEpochs(), classificator.costs, fileName + 'costFunction')
 
 if __name__ == "__main__":
-    '''
-    X = [[5 ,8],[9 ,7],[2 ,8],[9 ,2],[2 ,5],[9 ,9],[9 ,9],[6 ,5],[9 ,2],[4 ,7],[6 ,4],[9 ,7],[2 ,8],[8 ,7],[2 ,3],[10,3],[10,9],[6 ,9],[9 ,5],[6 ,1],[5 ,10],[3 ,7],[5 ,8],[10,1],[5 ,3],[5 ,4],[1 ,5],[3 ,1],[2 ,9],[1 ,8],[3 ,5],[2 ,10],[6 ,8],[4 ,2],[5 ,1],[7 ,4],[8 ,6],[8 ,5],[9 ,1],[5 ,6],[1 ,5],[6 ,5],[7 ,5],[6 ,7],[9 ,4],[8 ,2],[7 ,9],[1 ,7],[1 ,4],[3 ,3]]
-    Y = [1, 1, -1, 1, -1, 1, 1, 1, 1, -1, 1, 1, -1, 1, -1, 1, 1, 1, 1, 1, 1, -1, 1, 1, 1, 1, -1, -1, -1, -1, -1, -1, 1, -1, 1, 1, 1, 1, 1,1, -1, 1, 1, 1, 1, 1, 1, -1, -1, -1]
-    svm = SVM()
-    svm.train(X, Y)
-    print('W:', svm.W)
-    print('b:', svm.b)
-    print('alphas:', svm.alphas)
-    for p in zip(X, Y):
-        c = svm.classificate(p[0])
-        print('point {0} in class {1} must be {2}'.format(p[0], c, p[1]))
-    '''    
     results = parser.parse_args()
     values = dataSetTestATrainingWithFixedDistribution()
+    #TODO: to uncomment after testing
     #values = dataSetTestATraining()
     trainingData = values[0]
     cov = values[1]
@@ -76,11 +65,12 @@ if __name__ == "__main__":
     Y2 = -1*np.ones((len(X2),))
     X = np.concatenate((X1, X2), axis = 0)
     Y = np.append(Y1, Y2)
-    classificator = SVM(results.learningRate, results.regParamC, results.maxNumIter)
-    classificator.train(X, Y)
-    print('W:', classificator.W)
-    print('b:', classificator.b)
-    if results.testUsingTrainingData == 0:
-        classificateData(classificator, trainingData, trainingData, "supportVectorMachineTest")
-    else:
-        classificateData(classificator, trainingData, dataSetTestATest(cov, means), "supportVectorMachineTest")
+    for C in results.regListParamC:
+        classificator = SVM(results.learningRate, C, results.maxNumIter)
+        classificator.train(X, Y)
+        print('W:', classificator.W)
+        print('b:', classificator.b)
+        if results.testUsingTrainingData == 0:
+            classificateData(classificator, trainingData, trainingData, "supportVectorMachineTest+C:" + str(C))
+        else:
+            classificateData(classificator, trainingData, dataSetTestATest(cov, means), "supportVectorMachineTest+C:" + str(C))
