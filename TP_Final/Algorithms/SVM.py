@@ -7,7 +7,7 @@ import math
 
 class SVM:
 
-	def __init__(self, lr = 0.5, C = 0.1, maxNumIter = 10000):
+	def __init__(self, lr = 0.1, C = 0.25, maxNumIter = 100):
 		self.lr = lr
 		self.C = C
 		self.costs = []
@@ -21,7 +21,6 @@ class SVM:
 		self.W = np.zeros(self.D[1])
 		self.b = 0
 		self.costs = []
-		allCosts = []
 		loss = 0
 		lossAux = np.inf
 		self.numIter = 0
@@ -38,12 +37,11 @@ class SVM:
 				self.W -= gamma * (self.W + self.C * grad)
 			self.findB()
 			loss *= self.C
-			delta = np.abs(lossAux - loss)
-			allCosts.append(delta)
+			delta = np.abs(lossAux - loss )
+			self.costs.append(delta)
 			lossAux = loss
 			self.numIter += 1
-		self.costs.append(allCosts) #TODO: It is the cost == delta of loss_{i} - loss_{i-1} ?
-		#print("costs:", self.costs)
+		print("costs:", self.costs)
 
 	def findB(self):
 		for i in range(self.X.shape[0]):

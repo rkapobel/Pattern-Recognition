@@ -3,19 +3,19 @@ import numpy as np
 import math
 from SyntheticValues import ClassificationValuesGenerator
 from Algorithms.SVM import SVM
-from Plotter import plotClassesWithDecisionBoundary, plotCosts
+from Plotter import plotClassesWithDecisionBoundary, plotConvergence
 import argparse
 from random import shuffle
 
 parser = argparse.ArgumentParser(description="Support Vector Machines for classification of 2 classes with vector space R^2.")
-parser.add_argument("-lr", action="store", dest="learningRate", type=float, default=0.5,
+parser.add_argument("-lr", action="store", dest="learningRate", type=float, default=0.1,
                     help="Learning rate of the learning rate of the gradient descent.")
-parser.add_argument("-c_list", action="store", dest="regListParamC", nargs="+", default=0.1, type=float,
+parser.add_argument("-c_list", action="store", dest="regListParamC", nargs="+", default=0.25, type=float,
                     help="A list of regularization parameter for the slack variables: too small == hard margin | too large == soft margin.") 
-parser.add_argument("-i", action="store", dest="maxNumIter", type=int, default=20000,
+parser.add_argument("-i", action="store", dest="maxNumIter", type=int, default=100,
                     help="Max number of iterations for the loss function of the gradient descent.")
 parser.add_argument("-e", action="store", dest="testUsingTrainingData", type=int, default=1,
-                    help="1: Test de classifier using a different data set. 0: Test using the training data set.")
+                    help="1: Test the classifier using a different data set. 0: Test using the training data set.")
 
 def dataSetTestATraining():
     numberOfDataPerClass = np.random.uniform(80, 100, 2)
@@ -30,7 +30,7 @@ def dataSetTestATrainingWithFixedDistribution():
     numberOfDataPerClass = np.random.uniform(80, 100, 2)
     svg = ClassificationValuesGenerator()
     cov = np.array([[1, 0], [0, 1]])
-    means = [[0, 0], [0, 5]]
+    means = [[0, 0], [0, 4]]
     return [svg.getSyntheticValuesForClassificationWithMeans(numberOfDataPerClass, cov, means), cov, means]
 
 def classificateData(classificator, trainingData, testData, fileName):
@@ -47,18 +47,21 @@ def classificateData(classificator, trainingData, testData, fileName):
     
     plotClassesWithDecisionBoundary(trainingData, classificated, classificator.W, classificator.b, fileName)
     #TODO: I need costs for every class with the actual implementation of the plotter.
-    #plotCosts(classificator.getEpochs(), classificator.costs, fileName + 'costFunction')
+    #plotConvergence(classificator.getEpochs(), classificator.costs, fileName + 'costFunction', 'error')
 
 if __name__ == "__main__":
     results = parser.parse_args()
-    values = dataSetTestATrainingWithFixedDistribution()
-    #TODO: to uncomment after testing
-    #values = dataSetTestATraining()
-    trainingData = values[0]
-    cov = values[1]
+    # To test with fixed distribution. set them in the method.
+    # TODO: Automatize this.
+    trainingValues = dataSetTestATrainingWithFixedDistribution()
+    # To test with random distribution. 
+    #trainingValues = dataSetTestATraining()
+    trainingData = trainingValues[0]
+    cov = trainingValues[1]
     print(cov, 'cov')
-    means = values[2]
+    means = trainingValues[2]
     print(means, 'means')
+    testValues = dataSetTestATest(cov, means)
     X1 = trainingData[0]
     Y1 = np.ones((len(X1),))
     X2 = trainingData[1]
@@ -71,6 +74,24 @@ if __name__ == "__main__":
         print('W:', classificator.W)
         print('b:', classificator.b)
         if results.testUsingTrainingData == 0:
-            classificateData(classificator, trainingData, trainingData, "supportVectorMachineTest+C:" + str(C))
+            classificateData(classificator, 
+            trainingData, 
+            trainingData, 
+            "supportVectorMachineTest-lr:" + 
+            str(results.learningRate) + 
+            "-C:" + str(C) + 
+            "-i:" + str(results.maxNumIter) +
+            "-means:" + str(means) +
+            "-cov:" + str(cov))
         else:
-            classificateData(classificator, trainingData, dataSetTestATest(cov, means), "supportVectorMachineTest+C:" + str(C))
+            classificateData(
+                classificator, 
+                trainingData, 
+                testValues, 
+                "supportVectorMachineTest-lr:" + 
+            str(results.learningRate) + 
+            "-C:" + str(C) + 
+            "-i:" + str(results.maxNumIter) +
+            "-means:" + str(means) +
+            "-cov:" + str(cov)
+            )
