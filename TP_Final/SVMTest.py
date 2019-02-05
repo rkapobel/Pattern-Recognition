@@ -30,7 +30,7 @@ def dataSetTestATrainingWithFixedDistribution():
     numberOfDataPerClass = np.random.uniform(80, 100, 2)
     svg = ClassificationValuesGenerator()
     cov = np.array([[1, 0], [0, 1]])
-    means = [[0, 0], [0, 4]]
+    means = [[0, 0], [0, 8]]
     return [svg.getSyntheticValuesForClassificationWithMeans(numberOfDataPerClass, cov, means), cov, means]
 
 def classificateData(classificator, trainingData, testData, fileName):
@@ -47,7 +47,7 @@ def classificateData(classificator, trainingData, testData, fileName):
     
     plotClassesWithDecisionBoundary(trainingData, classificated, classificator.W, classificator.b, fileName)
     #TODO: I need costs for every class with the actual implementation of the plotter.
-    #plotConvergence(classificator.getEpochs(), classificator.costs, fileName + 'costFunction', 'error')
+    plotConvergence(classificator.getEpochs(), classificator.costs, fileName + 'costFunction', 'error')
 
 if __name__ == "__main__":
     results = parser.parse_args()

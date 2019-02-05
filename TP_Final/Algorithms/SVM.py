@@ -38,7 +38,7 @@ class SVM:
 			self.findB()
 			loss *= self.C
 			delta = np.abs(lossAux - loss )
-			self.costs.append(delta)
+			self.costs.append(loss)
 			lossAux = loss
 			self.numIter += 1
 		print("costs:", self.costs)
