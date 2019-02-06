@@ -138,7 +138,7 @@ def plotConvergence(epochs, data, imageName, yTitle):
     plot.plot(epochs, data, '-b', label=yTitle)
     plot.legend(loc="upper right", shadow=True)
     plot.axes().set_xlabel("$Epochs$")
-    plot.axes().set_ylabel("${0}$".format(yTitle))
+    plot.axes().set_ylabel("{0}".format(yTitle))
     plot.savefig(os.path.join(imageDirectory, imageName + ".pdf"))
 
 def updatePlotParams():

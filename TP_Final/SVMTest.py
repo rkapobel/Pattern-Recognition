@@ -46,16 +46,15 @@ def classificateData(classificator, trainingData, testData, fileName):
             print("point {0} in class {1} must be {2}".format(point, ci, i))
     
     plotClassesWithDecisionBoundary(trainingData, classificated, classificator.W, classificator.b, fileName)
-    #TODO: I need costs for every class with the actual implementation of the plotter.
-    plotConvergence(classificator.getEpochs(), classificator.costs, fileName + 'costFunction', 'error')
+    #plotConvergence(classificator.getEpochs(), classificator.costs, fileName + 'costFunction', 'Cost function (Loss)')
 
 if __name__ == "__main__":
     results = parser.parse_args()
     # To test with fixed distribution. set them in the method.
     # TODO: Automatize this.
-    trainingValues = dataSetTestATrainingWithFixedDistribution()
+    #trainingValues = dataSetTestATrainingWithFixedDistribution()
     # To test with random distribution. 
-    #trainingValues = dataSetTestATraining()
+    trainingValues = dataSetTestATraining()
     trainingData = trainingValues[0]
     cov = trainingValues[1]
     print(cov, 'cov')
@@ -93,5 +92,4 @@ if __name__ == "__main__":
             "-C:" + str(C) + 
             "-i:" + str(results.maxNumIter) +
             "-means:" + str(means) +
-            "-cov:" + str(cov)
-            )
+            "-cov:" + str(cov))

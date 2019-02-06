@@ -1,7 +1,7 @@
 #!/usr/bin/python
 import numpy as np
 from numpy.linalg import inv
-from random import shuffle
+from random import shuffle, choice
 import math
 
 
@@ -21,38 +21,23 @@ class SVM:
 		self.W = np.zeros(self.D[1])
 		self.b = 0
 		self.costs = []
-		loss = 0
-		lossAux = np.inf
 		self.numIter = 0
-		delta = np.abs(lossAux - loss)
+		data = zip(self.X, self.Y)
 		while self.numIter < self.maxNumIter:
 			loss = 0
-			data = zip(self.X, self.Y)
 			shuffle(data)
-			gamma = (self.lr / float(self.numIter + 1))
+			(xi, yi) = choice(data)
+			prod = np.dot(self.W, xi)
+			self.b = yi - prod
+			gamma = (self.lr / float(1 + self.numIter))
 			for (xi, yi) in data:
 				v = yi * (np.dot(self.W, xi) + self.b)
 				loss += max(0, 1 - v)
-				grad = -xi * yi if (yi * (np.dot(self.W, xi) + self.b)) < 1 else 0
+				grad = -xi * yi if v < 1 else 0
 				self.W -= gamma * (self.W + self.C * grad)
-			self.findB()
-			loss *= self.C
-			delta = np.abs(lossAux - loss )
 			self.costs.append(loss)
-			lossAux = loss
 			self.numIter += 1
-		print("costs:", self.costs)
-
-	def findB(self):
-		for i in range(self.X.shape[0]):
-			xi = self.X[i]
-			yi = self.Y[i]
-			prod = np.dot(self.W, xi)
-			b = yi - prod 
-			if yi*(prod + b) == 1:
-				self.b = b
-				return
-		#TODO: throw an error?
+		#print("costs:", self.costs)
 
 	def classificate(self, x):
 		return int(np.sign(np.dot(self.W, x) + self.b))
