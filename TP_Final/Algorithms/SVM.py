@@ -33,8 +33,10 @@ class SVM:
 			for (xi, yi) in data:
 				v = yi * (np.dot(self.W, xi) + self.b)
 				loss += max(0, 1 - v)
-				grad = -xi * yi if v < 1 else 0
-				self.W -= gamma * (self.W + self.C * grad)
+				Wgrad = -xi * yi if v < 1 else 0
+				bgrad = -yi if v < 1 else 0
+				self.W -= gamma * (self.W + self.C * Wgrad)
+				self.b -= gamma * self.C * bgrad
 			self.costs.append(loss)
 			self.numIter += 1
 		#print("costs:", self.costs)

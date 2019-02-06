@@ -9,7 +9,7 @@ from random import shuffle
 
 parser = argparse.ArgumentParser(description="Support Vector Machines for classification of 2 classes with vector space R^2.")
 parser.add_argument("-lr", action="store", dest="learningRate", type=float, default=0.1,
-                    help="Learning rate of the learning rate of the gradient descent.")
+                    help="Learning rate of the gradient descent.")
 parser.add_argument("-c_list", action="store", dest="regListParamC", nargs="+", default=0.25, type=float,
                     help="A list of regularization parameter for the slack variables: too small == hard margin | too large == soft margin.") 
 parser.add_argument("-i", action="store", dest="maxNumIter", type=int, default=100,
@@ -30,7 +30,7 @@ def dataSetTestATrainingWithFixedDistribution():
     numberOfDataPerClass = np.random.uniform(80, 100, 2)
     svg = ClassificationValuesGenerator()
     cov = np.array([[1, 0], [0, 1]])
-    means = [[0, 0], [0, 8]]
+    means = [[0, 0], [0, 4]]
     return [svg.getSyntheticValuesForClassificationWithMeans(numberOfDataPerClass, cov, means), cov, means]
 
 def classificateData(classificator, trainingData, testData, fileName):
